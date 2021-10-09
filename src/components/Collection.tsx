@@ -10,12 +10,11 @@ export function withCollection<P extends object>(Component: ComponentType<P>): F
     const [mostViewed, setMostViewed] = useState<Array<Manga>>([]);
     const [latest, setLatest] = useState<Array<Manga>>([]);
     const [newest, setNewest] = useState<Array<Manga>>([]);
-    const [alphabetical, setAlphabetical] = useState<Array<Manga>>([]);
   
     return (
       <CollectionContext.Provider value={{
-        trending, mostViewed, latest, newest, alphabetical,
-        setTrending, setMostViewed, setLatest, setNewest, setAlphabetical
+        trending, mostViewed, latest, newest,
+        setTrending, setMostViewed, setLatest, setNewest
       }}>
         <Component {...props} />
       </CollectionContext.Provider>
@@ -30,10 +29,8 @@ interface ICollectionContext {
   mostViewed: Array<Manga>
   latest: Array<Manga>
   newest: Array<Manga>
-  alphabetical: Array<Manga>
   setTrending: React.Dispatch<React.SetStateAction<Manga[]>>
   setMostViewed: React.Dispatch<React.SetStateAction<Manga[]>>
   setLatest: React.Dispatch<React.SetStateAction<Manga[]>>
   setNewest: React.Dispatch<React.SetStateAction<Manga[]>>
-  setAlphabetical: React.Dispatch<React.SetStateAction<Manga[]>>
 }

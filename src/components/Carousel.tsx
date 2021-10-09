@@ -8,8 +8,9 @@ import { Manga } from '../functions/manga';
 import { removeLineBreaks, formatDescription } from "../functions/utils";
 import { width } from "../constants/Dimensions";
 
-const AUTO_SCROLL_INTERVAL = 8000; // in milliseconds
 const CARD_PADDING = 18;
+const AUTO_SCROLL_INTERVAL = 8000; // in milliseconds
+const PAGINATION_FADE_SPEED = 60;
 
 const Carousel: FC<ICarouselProps> = ({ data }) => {
   const [paginationVisibility] = useState(new Animated.Value(1));
@@ -31,7 +32,7 @@ const Carousel: FC<ICarouselProps> = ({ data }) => {
   
   const fadeTo = (value: 0 | 1) => {
     Animated.timing(paginationVisibility, { 
-      toValue: value, duration: 60, useNativeDriver: true 
+      toValue: value, duration: PAGINATION_FADE_SPEED, useNativeDriver: true 
     }).start();
   }
 

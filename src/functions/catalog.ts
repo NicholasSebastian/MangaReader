@@ -1,10 +1,12 @@
 import cheerio, { CheerioAPI } from "cheerio";
 import axios from "axios";
 
-export type SortOrder = "latest" | "topview" | "newest" | "az";
+export type SortOrder = "latest" | "topview" | "newest";
 type Status = "all" | "ongoing" | "complete";
 
 const BASE_URL = "https://m.manganelo.com";
+
+// TODO: catch network errors.
 
 export async function fetchContent(page: number, order: SortOrder, status: Status = "all", search?: string) {
   // Build the URL to access the right content.

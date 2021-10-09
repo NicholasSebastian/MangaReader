@@ -30,7 +30,7 @@ const RootNavigator: FC = () => {
         <Stack.Screen name="Overview" component={Overview} />
         <Stack.Screen name="Reader" component={Reader} />
       </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false }}>
+      <Stack.Group screenOptions={{ presentation: 'modal', headerTitle: "" }}>
         <Stack.Screen name="Updates" component={Updates} />
         <Stack.Screen name="Settings" component={Settings} />
       </Stack.Group>

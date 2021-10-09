@@ -1,4 +1,4 @@
-import React, { memo, NamedExoticComponent } from "react";
+import React, { memo, NamedExoticComponent, LegacyRef } from "react";
 import { StyleSheet, FlatList, View, StyleProp, ViewStyle } from "react-native";
 import { width } from "../constants/Dimensions";
 import { Manga } from "../functions/manga";
@@ -20,7 +20,7 @@ const renderer = (item: Manga, index: number, mode?: SubtextMode) => {
 }
 
 const Grid: NamedExoticComponent<IGridProps> = memo((props) => {
-  const { data, mode, rows, style, onEndReached } = props;
+  const { data, mode, rows, style, onEndReached, listRef } = props;
   if (rows) {
     const collection = data.slice(0, rows * numberOfColumns);
     return (
@@ -31,7 +31,7 @@ const Grid: NamedExoticComponent<IGridProps> = memo((props) => {
   }
   else {
     return (
-      <FlatList data={data} style={{ flex: 1 }}
+      <FlatList data={data} style={{ flex: 1 }} ref={listRef}
         keyExtractor={(item, index) => index.toString()}
         numColumns={numberOfColumns}
         contentContainerStyle={[styles.container, style]}
@@ -64,5 +64,8 @@ interface IGridProps {
   mode?: SubtextMode
   rows?: number
   style?: StyleProp<ViewStyle>
+
+  // Specifically for 'rows' = undefined; a.k.a. FlatList.
   onEndReached?: ((info: { distanceFromEnd: number }) => void) | null | undefined
+  listRef?: LegacyRef<FlatList<Manga>>
 }
