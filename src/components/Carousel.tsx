@@ -3,6 +3,7 @@ import {
   StyleSheet, Image, FlatList, Text, View, Pressable, 
   NativeScrollEvent, NativeSyntheticEvent, Animated } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import { BlurView } from 'expo-blur';
 
 import { Manga } from '../functions/manga';
 import { removeLineBreaks, formatDescription } from "../functions/utils";
@@ -69,30 +70,31 @@ const CarouselCard: NamedExoticComponent<ICardProps> = memo(({ manga }) => {
   const author = manga.author && removeLineBreaks(manga.author);
   const description = manga.summary && formatDescription(manga.summary);
 
-  // TODO: Replace background with darkened blurred manga image.
-
   return (
     <Pressable onPress={() => console.log(`Navigating to Overview with '${manga.title}'`)}>
       <View style={styles.card}>
-        <View style={{ width: '62%' }}>
-          <Text numberOfLines={1} 
-            style={[styles.bold, { color: colors.text, fontSize: 16 }]}>
-            {manga.title}
-          </Text>
-          <Text numberOfLines={1}
-            style={[styles.text, { color: colors.text, fontSize: 12, marginTop: 2 }]}>
-            {author}
-          </Text>
-          <Text style={[styles.bold, { color: colors.text, fontSize: 13, marginTop: 20 }]}>
-            Synopsis
-          </Text>
-          <Text numberOfLines={3} 
-            style={[styles.text, { color: colors.text, fontSize: 12 }]}>
-            {description}
-          </Text>
-        </View>
-        <Image source={{ uri: manga.imageSrc }} 
-          style={[styles.image, { borderColor: colors.text }]} />
+        <Image source={{ uri: manga.imageSrc }} style={StyleSheet.absoluteFill} />
+        <BlurView style={styles.content} intensity={85} tint="dark">
+          <View style={{ width: '62%' }}>
+            <Text numberOfLines={1} 
+              style={[styles.bold, { color: colors.text, fontSize: 16 }]}>
+              {manga.title}
+            </Text>
+            <Text numberOfLines={1}
+              style={[styles.text, { color: colors.text, fontSize: 12, marginTop: 2 }]}>
+              {author}
+            </Text>
+            <Text style={[styles.bold, { color: colors.text, fontSize: 13, marginTop: 20 }]}>
+              Synopsis
+            </Text>
+            <Text numberOfLines={3} 
+              style={[styles.text, { color: colors.text, fontSize: 12 }]}>
+              {description}
+            </Text>
+          </View>
+          <Image source={{ uri: manga.imageSrc }} 
+            style={[styles.image, { borderColor: colors.text }]} />
+        </BlurView>
       </View>
     </Pressable>
   );
@@ -108,12 +110,15 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#222',
     width: width * 0.9,
     marginHorizontal: width * 0.05,
-    borderRadius: 10,
+    overflow: 'hidden',
+    borderRadius: 10
+  },
+  content: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: CARD_PADDING
   },
   image: {

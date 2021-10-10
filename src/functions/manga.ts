@@ -3,27 +3,20 @@ import axios from "axios";
 import { fetchImage } from "./image";
 import { monthToIndex } from "./utils";
 
-// TODO: catch network errors.
-
 export async function fetchManga(url: string) {
-  try {
-    const response = await axios.get(url, { responseType: "text" });
-    const $ = cheerio.load(response.data);
-    
-    const data: Manga = {};
+  const response = await axios.get(url, { responseType: "text" });
+  const $ = cheerio.load(response.data);
+  
+  const data: Manga = {};
 
-    parseTitle($!, data);
-    parseDetails($!, data);
-    parseSummary($!, data);
-    parseChapters($!, data);
-    
-    await parseImage($!, data);
+  parseTitle($!, data);
+  parseDetails($!, data);
+  parseSummary($!, data);
+  parseChapters($!, data);
+  
+  await parseImage($!, data);
 
-    return data;
-  }
-  catch(e) {
-    console.warn(e);
-  }
+  return data;
 }
 
 function parseTitle($: CheerioAPI, data: Manga) {

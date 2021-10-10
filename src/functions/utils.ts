@@ -14,15 +14,13 @@ export function filterObject(obj: object, predicate: FilterPredicate) {
   return Object.fromEntries(Object.entries(obj).filter(predicate));
 }
 
-export function shortenChapterName(text: string) {
-  // TODO: This does not work for chapter names with extra numbers in them.
-  const smatch = text.match(/^.*\d/);
-  return smatch![0];
-}
-
 export function formatDescription(text: string) {
-  // TODO: Remove the empty lines and any other junk before the actual text.
+  // Remove the first two lines.
+  const lines = text.split('\n');
+  lines.splice(0, 2);
+  const newText = lines.join('\n');
+
   // TODO: Take only the first paragraph.
 
-  return text.replace(/Description/gm, '');
+  return newText;
 }

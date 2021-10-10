@@ -2,7 +2,7 @@ import React, { memo, NamedExoticComponent } from "react";
 import { StyleSheet, View, Text, Image, Pressable, StyleProp, ViewStyle } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Manga } from "../functions/manga";
-import { removeLineBreaks, shortenChapterName } from "../functions/utils";
+import { removeLineBreaks } from "../functions/utils";
 
 const Card: NamedExoticComponent<ICardProps> = memo((props) => {
   const { manga, style, mode, aspectRatio, showChapter } = props;
@@ -17,7 +17,7 @@ const Card: NamedExoticComponent<ICardProps> = memo((props) => {
             {manga.title}
           </Text>
           {showChapter && manga.chapters && manga.chapters[0] && (
-            <Text style={styles.subtext}>{shortenChapterName(manga.chapters[0].name)}</Text>
+            <Text style={styles.subtext} numberOfLines={1}>{manga.chapters[0].name}</Text>
           )}
           <Text style={styles.subtext} numberOfLines={1}>
             {mode === "author" && (

@@ -35,17 +35,25 @@ const App: FC = () => {
 
   // NOTE: This function takes roughly 17s on average to execute.
   const loadCollection = async () => {
-    const content = await fetchContent(1, "topview")
-    const trendingUrls = parseCarousel(content);
-    const mostViewedUrls = parseContent(content);
-    
-    const load1 = getCollection(trendingUrls).then(setTrending);
-    const load2 = getCollection(mostViewedUrls).then(setMostViewed);
+    try {
+      const content = await fetchContent(1, "topview")
+      const trendingUrls = parseCarousel(content);
+      const mostViewedUrls = parseContent(content);
+      
+      const load1 = getCollection(trendingUrls).then(setTrending);
+      const load2 = getCollection(mostViewedUrls).then(setMostViewed);
 
-    const load3 = fetchContent(1, "latest").then(parseContent).then(getCollection).then(setLatest);
-    const load4 = fetchContent(1, "newest").then(parseContent).then(getCollection).then(setNewest);
+      const load3 = fetchContent(1, "latest").then(parseContent).then(getCollection).then(setLatest);
+      const load4 = fetchContent(1, "newest").then(parseContent).then(getCollection).then(setNewest);
 
-    await Promise.all([load1, load2, load3, load4]);
+      await Promise.all([load1, load2, load3, load4]);
+    }
+    catch(e) {
+      // Could not connect to server; offline mode;
+      // TODO: Change the following; probably not the right thing to do here.
+      const subscription = NetInfo.addEventListener(onOffline);
+      setNetworkListener(subscription);
+    }
   }
 
   const onOffline: NetInfoChangeHandler = ({ isConnected }) => {

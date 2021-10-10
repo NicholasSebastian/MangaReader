@@ -6,8 +6,6 @@ type Status = "all" | "ongoing" | "complete";
 
 const BASE_URL = "https://m.manganelo.com";
 
-// TODO: catch network errors.
-
 export async function fetchContent(page: number, order: SortOrder, status: Status = "all", search?: string) {
   // Build the URL to access the right content.
   const orderParams = order !== "latest" ? `&orby=${order}` : "";
