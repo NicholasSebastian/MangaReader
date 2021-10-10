@@ -1,5 +1,7 @@
 import React, { memo, NamedExoticComponent, LegacyRef } from "react";
 import { StyleSheet, FlatList, View, StyleProp, ViewStyle } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+
 import { width } from "../constants/Dimensions";
 import { Manga } from "../functions/manga";
 import Card, { SubtextMode } from "./Card";
@@ -20,7 +22,7 @@ const renderer = (item: Manga, index: number, mode?: SubtextMode) => {
 }
 
 const Grid: NamedExoticComponent<IGridProps> = memo((props) => {
-  const { data, mode, rows, style, onEndReached, listRef } = props;
+  const { data, mode, rows, style, onEndReached, listRef, loading } = props;
   if (rows) {
     const collection = data.slice(0, rows * numberOfColumns);
     return (
@@ -37,9 +39,18 @@ const Grid: NamedExoticComponent<IGridProps> = memo((props) => {
         contentContainerStyle={[styles.container, style]}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         renderItem={({ item, index }) => renderer(item, index, mode)}
-        onEndReachedThreshold={0.5} onEndReached={onEndReached} />
+        onEndReachedThreshold={0.5} onEndReached={onEndReached}
+        ListFooterComponent={loading ? Loading : null}
+        ListFooterComponentStyle={styles.loading} />
     );
   }
+});
+
+const Loading: NamedExoticComponent = memo(() => {
+  // TODO: Spin animation.
+  return (
+    <FontAwesome name="paperclip" color="#808080" size={25} style={{ marginTop: 20 }} />
+  );
 });
 
 export default Grid;
@@ -56,6 +67,9 @@ const styles = StyleSheet.create({
   },
   card: {
     width: cardWidth
+  },
+  loading: {
+    alignItems: "center"
   }
 });
 
@@ -68,4 +82,5 @@ interface IGridProps {
   // Specifically for 'rows' = undefined; a.k.a. FlatList.
   onEndReached?: ((info: { distanceFromEnd: number }) => void) | null | undefined
   listRef?: LegacyRef<FlatList<Manga>>
+  loading: boolean
 }

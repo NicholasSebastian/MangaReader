@@ -117,10 +117,7 @@ class Catalog extends Component<RootTabScreenProps<'Catalog'>, ISearchState> {
               <SlidingOption options={["Popular", "Updated", "Newest"]} 
                 style={styles.options} onIndexChange={this.handleSortChange} />
               <Grid data={data} mode="author" listRef={this.listRef}
-                style={styles.grid} onEndReached={this.loadMore} />
-              {loading && (
-                <FontAwesome name="paperclip" size={20} color="#808080" />
-              )}
+                style={styles.grid} onEndReached={this.loadMore} loading={loading} />
             </View>
           ) : (
             <Message text="You are currently offline." />
