@@ -9,6 +9,7 @@ export function removeLineBreaks(text: string) {
 }
 
 export function shortenChapterName(text: string) {
+  // TODO: This does not work for chapter names with extra numbers in them.
   const smatch = text.match(/^.*\d/);
   return smatch![0];
 }

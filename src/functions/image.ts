@@ -1,5 +1,4 @@
 import axios from "axios";
-// global.Buffer = global.Buffer || require('buffer').Buffer;
 
 const ROOT_URL = "http://manganato.com/";
 
@@ -16,9 +15,6 @@ function toBase64(blob: Blob) {
   });
 }
 
-// TODO: Why is this not working.
-// Maybe try test it with some dummy base64 strings?
-
 export async function fetchImage(url: string) {
   const headers = {
     'Host': getUrlHost(url), 
@@ -30,11 +26,7 @@ export async function fetchImage(url: string) {
     'Connection': 'keep-alive'
   }
 
-  const response = await axios.get(url, { headers, responseType: "arraybuffer" });
-  
-  // const base64Data = Buffer.from(response.data, "binary").toString("base64");
-  // const mimetype = response.headers["content-type"];
-  // const imageUri = `data:${mimetype};base64,${base64Data}`;
+  const response = await axios.get(url, { headers, responseType: "blob" });
   
   const imageUri = await toBase64(response.data);
   return imageUri;

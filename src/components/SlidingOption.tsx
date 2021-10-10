@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { width } from "../constants/Dimensions";
 
 const HEIGHT = 5;
-const SLIDER_SPEED = 180;
+const SLIDER_SPEED = 300;
 
 const SlidingOption: FC<IButtonProps> = (props) => {
   const { options, onIndexChange, style } = props;

@@ -1,5 +1,6 @@
 import React, { FC, useState, useContext } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Asset } from "expo-asset";
 import * as Font from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import AppLoading from "expo-app-loading";
@@ -33,8 +34,9 @@ const App: FC = () => {
           const load4 = fetchContent(1, "newest").then(parseContent).then(getCollection).then(setNewest);
           
           const load5 = Font.loadAsync(fonts);
+          const load6 = Asset.loadAsync(require("./src/assets/images/logo.png"));
 
-          await Promise.all([load1, load2, load3, load4, load5]);
+          await Promise.all([load1, load2, load3, load4, load5, load6]);
           
           const end = Date.now();
           console.log(`Load time: ${(end - start) / 1000}s`);

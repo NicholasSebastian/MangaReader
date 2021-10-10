@@ -13,8 +13,6 @@ import Carousel from "../components/Carousel";
 import Grid from '../components/Grid';
 import HorizontalList from '../components/HorizontalList';
 
-const logo = require("../assets/images/logo.png");
-
 const Home: FC<RootTabScreenProps<'Home'>> = () => {
   const { trending, mostViewed, latest, newest } = useContext(Collection);
   const { colors } = useTheme();
@@ -55,7 +53,7 @@ function getHomeScreen(Screen: ScreenType, theme: Theme) {
           <FontAwesome name="home" color={color} size={28} style={{ marginBottom: -3 }} />
         ),
         headerLeft: () => (
-          <Image source={logo} style={{ 
+          <Image source={require("../assets/images/logo.png")} style={{ 
             marginLeft: width * 0.05, tintColor: colors.text, height: 20, aspectRatio: 7 
           }} />
         ),
