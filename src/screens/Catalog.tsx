@@ -6,12 +6,15 @@ import { AsyncResultIterator, mapLimit } from "async";
 
 import { RootTabScreenProps } from '../../types';
 import { ScreenType } from "../navigation";
+import Collection from "../context/Collection";
+import Online from '../context/Online';
 
 import { fetchContent, parseContent, SortOrder } from "../functions/catalog";
 import { fetchManga, Manga } from "../functions/manga";
-import Collection from "../components/Collection";
+
 import Grid from "../components/Grid";
 import SlidingOption from "../components/SlidingOption";
+import Message from "../components/Message";
 
 const MAX_CONCURRENT_FETCHES = 4;
 
@@ -94,9 +97,10 @@ class Catalog extends Component<RootTabScreenProps<'Catalog'>, ISearchState> {
 
   render() {
     const { mostViewed, latest, newest } = this.context;
+    const { sortBy, loading } = this.state;
 
     let data: Array<Manga>;
-    switch (this.state.sortBy) {
+    switch (sortBy) {
       case "latest":
         data = latest; break;
       case "newest":
@@ -106,13 +110,22 @@ class Catalog extends Component<RootTabScreenProps<'Catalog'>, ISearchState> {
     }
 
     return (
-      <View style={styles.container}>
-        <SlidingOption options={["Popular", "Updated", "Newest"]} 
-          style={styles.options} onIndexChange={this.handleSortChange} />
-        <Grid data={data} mode="author" listRef={this.listRef}
-          style={styles.grid} onEndReached={this.loadMore} />
-        {/* TODO: Show loading indicator when fetching in progress. */}
-      </View>
+      <Online.Consumer>
+        {isConnected => 
+          isConnected ? (
+            <View style={styles.container}>
+              <SlidingOption options={["Popular", "Updated", "Newest"]} 
+                style={styles.options} onIndexChange={this.handleSortChange} />
+              <Grid data={data} mode="author" listRef={this.listRef}
+                style={styles.grid} onEndReached={this.loadMore} />
+              {loading && (
+                <FontAwesome name="paperclip" size={20} color="#808080" />
+              )}
+            </View>
+          ) : (
+            <Message text="You are currently offline." />
+          )}
+      </Online.Consumer>
     );
   }
 }

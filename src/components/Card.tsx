@@ -16,7 +16,7 @@ const Card: NamedExoticComponent<ICardProps> = memo((props) => {
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
             {manga.title}
           </Text>
-          {showChapter && manga.chapters && (
+          {showChapter && manga.chapters && manga.chapters[0] && (
             <Text style={styles.subtext}>{shortenChapterName(manga.chapters[0].name)}</Text>
           )}
           <Text style={styles.subtext} numberOfLines={1}>

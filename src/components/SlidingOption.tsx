@@ -6,6 +6,8 @@ import { width } from "../constants/Dimensions";
 const HEIGHT = 5;
 const SLIDER_SPEED = 300;
 
+// TODO: replace 'left' with 'translateX'; 'useNativeDriver' can then be true.
+
 const SlidingOption: FC<IButtonProps> = (props) => {
   const { options, onIndexChange, style } = props;
   const { colors } = useTheme();

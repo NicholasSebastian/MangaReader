@@ -1,22 +1,28 @@
 import React, { FC, useContext } from 'react';
-import { StyleSheet, ScrollView, View, Pressable, Image } from 'react-native';
+import { StyleSheet, ScrollView, View, Pressable, Image, Text } from 'react-native';
 import { useTheme, Theme } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
 import { RootTabScreenProps } from '../../types';
 import { ScreenType } from '../navigation';
 import { width } from '../constants/Dimensions';
+import Collection from "../context/Collection";
+import Online from '../context/Online';
 
-import Collection from "../components/Collection";
 import Heading from '../components/Heading';
 import Carousel from "../components/Carousel";
 import Grid from '../components/Grid';
 import HorizontalList from '../components/HorizontalList';
+import Message from '../components/Message';
 
 const Home: FC<RootTabScreenProps<'Home'>> = () => {
   const { trending, mostViewed, latest, newest } = useContext(Collection);
+  const isConnected = useContext(Online);
   const { colors } = useTheme();
 
+  if (!isConnected) {
+    return <Message text="You are currently offline." />;
+  }
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.section}>

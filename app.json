@@ -8,9 +8,9 @@
     "scheme": "mangareader",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./src/assets/images/splash.png",
+      "backgroundColor": "#20202a"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

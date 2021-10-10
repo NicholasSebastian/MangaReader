@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import { useColorScheme } from 'react-native';
 import { NavigationContainer, useTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList, RootTabParamList } from '../../types';
 import { DefaultTheme, DarkTheme } from '../constants/Colors';
 import LinkingConfiguration from './linkingConfiguration';
+import Online from "../context/Online";
 
 import getHome from '../screens/Home';
 import getCatalog from '../screens/Catalog';
@@ -40,6 +41,7 @@ const RootNavigator: FC = () => {
 
 const BottomTabNavigator: FC = () => {
   const theme = useTheme();
+  const isConnected = useContext(Online);
 
   const HomeScreen = getHome(BottomTab.Screen, theme);
   const CatalogScreen = getCatalog(BottomTab.Screen, theme);
@@ -48,7 +50,7 @@ const BottomTabNavigator: FC = () => {
   const DownloadsScreen = getDownloads(BottomTab.Screen, theme);
 
   return (
-    <BottomTab.Navigator initialRouteName="Home"
+    <BottomTab.Navigator initialRouteName={isConnected ? "Home" : "Downloads"}
       screenOptions={{ tabBarActiveTintColor: theme.colors.text }}>
       {HomeScreen}
       {CatalogScreen}
