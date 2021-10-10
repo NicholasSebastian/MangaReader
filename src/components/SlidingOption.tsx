@@ -6,8 +6,6 @@ import { width } from "../constants/Dimensions";
 const HEIGHT = 5;
 const SLIDER_SPEED = 300;
 
-// TODO: replace 'left' with 'translateX'; 'useNativeDriver' can then be true.
-
 const SlidingOption: FC<IButtonProps> = (props) => {
   const { options, onIndexChange, style } = props;
   const { colors } = useTheme();
@@ -20,7 +18,7 @@ const SlidingOption: FC<IButtonProps> = (props) => {
   const moveTo = (index: number) => {
     if (currentIndex !== index) {
       Animated.timing(animatedIndex, {
-        toValue: index * optionWidth, duration: SLIDER_SPEED, useNativeDriver: false
+        toValue: index * optionWidth, duration: SLIDER_SPEED, useNativeDriver: true
       }).start();
       setCurrentIndex(index);
       onIndexChange(index);
@@ -29,7 +27,7 @@ const SlidingOption: FC<IButtonProps> = (props) => {
   return (
     <View style={[styles.container, { backgroundColor: colors.card }, style]}>
       <Animated.View style={[styles.slider, { 
-        backgroundColor: colors.primary, width: optionWidth, left: animatedIndex }]}>
+        backgroundColor: colors.primary, width: optionWidth, transform: [{ translateX: animatedIndex }] }]}>
         <Text style={[styles.text, styles.selected, { color: colors.text }]}>
           {options[currentIndex]}
         </Text>
