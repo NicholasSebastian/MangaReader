@@ -44,7 +44,7 @@ const Home: FC<RootTabScreenProps<'Home'>> = (props) => {
       <View style={styles.section}>
         <Heading title="New Releases!" description="Read our latest recommendations"
           onMore={() => navigation.navigate("Catalog", { sort: "newest" })} />
-        <HorizontalList data={newest} mode="genre" wide />
+        <HorizontalList data={newest} mode="genre" />
       </View>
     </ScrollView>
   );

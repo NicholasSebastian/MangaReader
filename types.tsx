@@ -15,7 +15,7 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Overview: { manga: Manga };
   ChapterList: { chapters: Array<any> };
-  Reader: undefined;
+  Reader: { chapterUrl: string };
   Updates: undefined;
   Settings: undefined;
 };

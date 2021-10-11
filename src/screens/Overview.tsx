@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { StyleSheet, Text, ScrollView, View, Image, Pressable, useColorScheme } from 'react-native';
+import { StyleSheet, Text, ScrollView, View, Image, 
+  Pressable, TouchableOpacity, useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { FontAwesome } from '@expo/vector-icons';
@@ -10,7 +11,7 @@ import { RootStackScreenProps } from '../../types';
 import { formatDescription, removeLineBreaks } from '../functions/utils';
 import { Manga } from '../functions/manga';
 
-const BUTTON_SIZE = 28;
+const BUTTON_SIZE = 27;
 
 const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
   const { route, navigation } = props;
@@ -71,7 +72,7 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
               Status
             </Text>
             <Text style={[styles.subtext, { color: colors.text }]}>
-              {manga.status ? "Completed" : "On Going"}
+              {manga.status ? "Completed" : "Ongoing"}
             </Text>
           </View>
           {/* TODO: Fetch similar manga, display here. */}
@@ -79,10 +80,10 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
       </ScrollView>
       <View style={styles.mainButtonContainer}>
         <LinearGradient colors={["transparent", colors.background]} style={styles.mainButtonBackdrop} />
-        <Pressable style={[styles.mainButton, { backgroundColor: colors.primary }]} 
+        <TouchableOpacity style={[styles.mainButton, { backgroundColor: colors.primary }]} activeOpacity={0.9}
           onPress={() => navigation.navigate("ChapterList", { chapters: manga.chapters! })}>
           <Text style={styles.mainButtonText}>Read Now</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
     borderColor: "#808080",
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 4
   },
   mainButtonContainer: {

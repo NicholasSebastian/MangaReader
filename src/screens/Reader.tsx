@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { RootStackScreenProps } from '../../types';
 
-class Reader extends Component {
+class Reader extends Component<RootStackScreenProps<'Reader'>, IReaderState> {
+  // TODO: fetch the page images from the link and render.
   render() {
+    const { route } = this.props; 
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Reader</Text>
+        <Text style={styles.title}>{route.params.chapterUrl}</Text>
       </View>
     );
   }
@@ -24,3 +27,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+interface IReaderState {
+  // here
+}
