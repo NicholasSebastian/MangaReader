@@ -2,12 +2,13 @@ import React, { NamedExoticComponent, memo } from "react";
 import { StyleSheet, View, Text } from 'react-native';
 import { useTheme } from "@react-navigation/native";
 
-const Message: NamedExoticComponent<IMessageProps> = memo(() => {
+const Message: NamedExoticComponent<IMessageProps> = memo((props) => {
   const { colors } = useTheme();
+  const { text } = props;
   return (
     <View style={styles.offline}>
       <Text style={[styles.offlineText, { color: colors.text }]}>
-        {}
+        {text}
       </Text>
     </View>
   );

@@ -4,19 +4,22 @@ import { fetchImage } from "./image";
 import { monthToIndex } from "./utils";
 
 export async function fetchManga(url: string) {
-  const response = await axios.get(url, { responseType: "text" });
-  const $ = cheerio.load(response.data);
-  
-  const data: Manga = {};
+  try {
+    const response = await axios.get(url, { responseType: "text" });
+    const $ = cheerio.load(response.data);
+    
+    const data: Manga = {};
 
-  parseTitle($!, data);
-  parseDetails($!, data);
-  parseSummary($!, data);
-  parseChapters($!, data);
-  
-  await parseImage($!, data);
+    parseTitle($!, data);
+    parseDetails($!, data);
+    parseSummary($!, data);
+    parseChapters($!, data);
+    
+    await parseImage($!, data);
 
-  return data;
+    return data;
+  }
+  catch (e) { throw e; }
 }
 
 function parseTitle($: CheerioAPI, data: Manga) {

@@ -17,6 +17,7 @@ import SplashScreen from './src/components/SplashScreen';
 const App: FC = () => {
   const { setTrending, setMostViewed, setLatest, setNewest } = useContext(Collection);
   const [networkListener, setNetworkListener] = useState<NetInfoSubscription | null>(null);
+  const [connectionFailed, setConnectionFailed] = useState(false);
 
   const loadResources = async () => { 
     const { isConnected } = await NetInfo.fetch();
@@ -48,11 +49,9 @@ const App: FC = () => {
 
       await Promise.all([load1, load2, load3, load4]);
     }
-    catch(e) {
-      // Could not connect to server; offline mode;
-      // TODO: Change the following; probably not the right thing to do here.
-      const subscription = NetInfo.addEventListener(onOffline);
-      setNetworkListener(subscription);
+    catch(e) { 
+      // TODO: Network errors are still not being caught here...
+      setConnectionFailed(true);
     }
   }
 
@@ -68,7 +67,7 @@ const App: FC = () => {
   return (
     <SplashScreen loadAsync={loadResources}>
       <SafeAreaProvider>
-        <Online.Provider value={networkListener === null}>
+        <Online.Provider value={networkListener === null && !connectionFailed}>
           <Navigation />
         </Online.Provider>
       </SafeAreaProvider>

@@ -26,10 +26,13 @@ export async function fetchImage(url: string) {
     'Connection': 'keep-alive'
   }
 
-  const response = await axios.get(url, { headers, responseType: "blob" });
+  try {
+    const response = await axios.get(url, { headers, responseType: "blob" });
   
-  const imageUri = await toBase64(response.data);
-  return imageUri;
+    const imageUri = await toBase64(response.data);
+    return imageUri;
+  }
+  catch (e) { throw e; }
 }
 
 type Base64Result = string | ArrayBuffer | null;

@@ -1,5 +1,5 @@
-import React, { memo, NamedExoticComponent, LegacyRef } from "react";
-import { StyleSheet, FlatList, View, StyleProp, ViewStyle } from "react-native";
+import React, { memo, NamedExoticComponent, LegacyRef, useState, useEffect } from "react";
+import { StyleSheet, FlatList, View, StyleProp, ViewStyle, Animated, Easing } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
 import { width } from "../constants/Dimensions";
@@ -8,6 +8,7 @@ import Card, { SubtextMode } from "./Card";
 
 const CARD_SIZE_ESTIMATE = 120;
 const CARD_GAP = 8;
+const SPIN_SPEED = 500; // Higher means slower.
 
 const numberOfColumns = Math.round(width / CARD_SIZE_ESTIMATE);
 const cardWidth = ((width * 0.9) / numberOfColumns) - CARD_GAP;
@@ -47,9 +48,19 @@ const Grid: NamedExoticComponent<IGridProps> = memo((props) => {
 });
 
 const Loading: NamedExoticComponent = memo(() => {
-  // TODO: Spin animation.
+  const [rotationValue] = useState(new Animated.Value(0));
+  const rotation = rotationValue.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+
+  useEffect(() => {
+    const config = { duration: SPIN_SPEED, easing: Easing.linear, useNativeDriver: true };
+    const timing = Animated.timing(rotationValue, { toValue: 1, ...config });
+    Animated.loop(timing).start()
+  }, []);
+
   return (
-    <FontAwesome name="paperclip" color="#808080" size={25} style={{ marginTop: 20 }} />
+    <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+      <FontAwesome name="paperclip" color="#808080" size={25} />
+    </Animated.View>
   );
 });
 
@@ -69,7 +80,8 @@ const styles = StyleSheet.create({
     width: cardWidth
   },
   loading: {
-    alignItems: "center"
+    alignItems: "center",
+    paddingTop: 20
   }
 });
 

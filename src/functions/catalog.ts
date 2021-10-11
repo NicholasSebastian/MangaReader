@@ -13,11 +13,14 @@ export async function fetchContent(page: number, order: SortOrder, status: Statu
   const searchParams = search ? `&keyw=${search}` : "";
   const url = `${BASE_URL}/advanced_search?s=all${statusParams}${orderParams}&page=${page}${searchParams}`;
 
-  // Fetch and load the content.
-  const { data } = await axios.get(url, { responseType: "text" });
-  let $ = cheerio.load(data);
-  
-  return $;
+  try {
+    // Fetch and load the content.
+    const { data } = await axios.get(url, { responseType: "text" });
+    let $ = cheerio.load(data);
+    
+    return $;
+  }
+  catch(e) { throw e; }
 }
 
 // Extract the data from the given content.
