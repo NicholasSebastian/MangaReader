@@ -8,7 +8,7 @@ import Card, { SubtextMode } from "./Card";
 
 const CARD_SIZE_ESTIMATE = 120;
 const CARD_GAP = 8;
-const SPIN_SPEED = 500; // Higher means slower.
+const SPIN_SPEED = 1500; // Higher means slower.
 
 const numberOfColumns = Math.round(width / CARD_SIZE_ESTIMATE);
 const cardWidth = ((width * 0.9) / numberOfColumns) - CARD_GAP;
@@ -59,7 +59,7 @@ const Loading: NamedExoticComponent = memo(() => {
 
   return (
     <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-      <FontAwesome name="paperclip" color="#808080" size={25} />
+      <FontAwesome name="spinner" color="#808080" size={25} />
     </Animated.View>
   );
 });
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   loading: {
     alignItems: "center",
-    paddingTop: 20
+    paddingTop: 30
   }
 });
 
