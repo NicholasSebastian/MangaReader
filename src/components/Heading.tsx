@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "poppins-medium",
     marginBottom: 2
   },

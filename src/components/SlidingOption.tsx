@@ -30,7 +30,7 @@ const SlidingOption: FC<IButtonProps> = (props) => {
     <View style={[styles.container, { backgroundColor: colors.card }, style]}>
       <Animated.View style={[styles.slider, { 
         backgroundColor: colors.primary, width: optionWidth, transform: [{ translateX: animatedIndex }] }]}>
-        <Text style={[styles.text, styles.selected, { color: colors.text }]}>
+        <Text style={[styles.text, styles.selected]}>
           {options[currentIndex]}
         </Text>
       </Animated.View>
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     color: "#808080"
   },
   selected: {
+    color: "#fff",
     fontFamily: "poppins-medium"
   }
 });

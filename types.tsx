@@ -14,6 +14,7 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Overview: { manga: Manga };
+  ChapterList: { chapters: Array<any> };
   Reader: undefined;
   Updates: undefined;
   Settings: undefined;

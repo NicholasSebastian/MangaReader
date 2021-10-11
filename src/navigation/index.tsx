@@ -16,6 +16,7 @@ import getRecents from '../screens/Recents';
 import getDownloads from '../screens/Downloads';
 
 import Overview from '../screens/Overview';
+import ChapterList from '../screens/ChapterList';
 import Reader from "../screens/Reader";
 import Updates from '../screens/Updates';
 import Settings from '../screens/Settings';
@@ -31,7 +32,8 @@ const RootNavigator: FC = () => {
         <Stack.Screen name="Overview" component={Overview} />
         <Stack.Screen name="Reader" component={Reader} />
       </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: 'modal', headerTitle: "" }}>
+      <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false }}>
+        <Stack.Screen name="ChapterList" component={ChapterList} />
         <Stack.Screen name="Updates" component={Updates} />
         <Stack.Screen name="Settings" component={Settings} />
       </Stack.Group>

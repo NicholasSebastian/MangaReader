@@ -62,7 +62,7 @@ function parseDetails($: CheerioAPI, data: Manga) {
       data.lastUpdate = new Date(year, month, day);
     }
     else if (label.match(/view/)) {
-      data.views = parseInt(value.replace(/,/, ''));
+      data.views = parseInt(value.replace(/,/, ''));  // TODO: fix this
     }
   }
 }
