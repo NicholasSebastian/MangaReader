@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { StyleSheet, View, Text, Pressable, Animated, StyleProp, ViewStyle } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { width } from "../constants/Dimensions";
@@ -7,13 +7,15 @@ const HEIGHT = 5;
 const SLIDER_SPEED = 300;
 
 const SlidingOption: FC<IButtonProps> = (props) => {
-  const { options, onIndexChange, style } = props;
+  const { options, onIndexChange, style, override } = props;
   const { colors } = useTheme();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animatedIndex] = useState(new Animated.Value(0));
 
   const optionWidth = (width * 0.9) / options.length;
+
+  useEffect(() => { if (override !== undefined) moveTo(override) }, [override]);
 
   const moveTo = (index: number) => {
     if (currentIndex !== index) {
@@ -76,4 +78,5 @@ interface IButtonProps {
   options: Array<string>
   onIndexChange: (index: number) => void
   style?: StyleProp<ViewStyle>
+  override?: number
 }

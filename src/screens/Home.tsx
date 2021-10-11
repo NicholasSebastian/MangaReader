@@ -15,10 +15,11 @@ import Grid from '../components/Grid';
 import HorizontalList from '../components/HorizontalList';
 import Message from '../components/Message';
 
-const Home: FC<RootTabScreenProps<'Home'>> = () => {
+const Home: FC<RootTabScreenProps<'Home'>> = (props) => {
   const { trending, mostViewed, latest, newest } = useContext(Collection);
   const isConnected = useContext(Online);
   const { colors } = useTheme();
+  const { navigation } = props;
 
   if (!isConnected) {
     return <Message text="You are currently offline." />;
@@ -32,17 +33,17 @@ const Home: FC<RootTabScreenProps<'Home'>> = () => {
       {/* TODO: Continue Reading */}
       <View style={styles.section}>
         <Heading title="Most Popular Manga" description="Guaranteed to be interesting"
-          onMore={() => console.log("Navigate")} />
+          onMore={() => navigation.navigate("Catalog", { sort: "topview" })} />
         <Grid data={mostViewed} mode="genre" rows={2} />
       </View>
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <Heading title="Updated Manga" description="Don't miss this week's update"
-          onMore={() => console.log("Navigate")} />
+          onMore={() => navigation.navigate("Catalog", { sort: "latest" })} />
         <HorizontalList data={latest} mode="genre" showChapters />
       </View>
       <View style={styles.section}>
         <Heading title="New Releases!" description="Read our latest recommendations"
-          onMore={() => console.log("Navigate")} />
+          onMore={() => navigation.navigate("Catalog", { sort: "newest" })} />
         <HorizontalList data={newest} mode="genre" wide />
       </View>
     </ScrollView>

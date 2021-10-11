@@ -84,20 +84,18 @@ class Catalog extends Component<RootTabScreenProps<'Catalog'>, ISearchState> {
   }
 
   private handleSortChange(index: number) {
-    switch (index) {
-      case 1:
-        this.setState({ sortBy: "latest" }); break;
-      case 2:
-        this.setState({ sortBy: "newest" }); break;
-      default:
-        this.setState({ sortBy: "topview" }); break;
-    }
+    const sortMapping: Array<SortOrder> = ["topview", "latest", "newest"];
+    this.setState({ sortBy: sortMapping[index] });
     this.listRef.current?.scrollToOffset({ offset: 0, animated: false });
   }
 
   render() {
     const { mostViewed, latest, newest } = this.context;
     const { sortBy, loading } = this.state;
+    const { params } = this.props.route;
+    
+    const sortMapping: Array<SortOrder> = ["topview", "latest", "newest"];
+    const overrideSortBy = params && sortMapping.indexOf(params.sort);
 
     let data: Array<Manga>;
     switch (sortBy) {
@@ -114,7 +112,7 @@ class Catalog extends Component<RootTabScreenProps<'Catalog'>, ISearchState> {
         {isConnected => 
           isConnected ? (
             <View style={styles.container}>
-              <SlidingOption options={["Popular", "Updated", "Newest"]} 
+              <SlidingOption options={["Popular", "Updated", "Newest"]} override={overrideSortBy}
                 style={styles.options} onIndexChange={this.handleSortChange} />
               <Grid data={data} mode="author" listRef={this.listRef}
                 style={styles.grid} onEndReached={this.loadMore} loading={loading} />

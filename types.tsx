@@ -2,6 +2,9 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+import { Manga } from './src/functions/manga';
+import { SortOrder } from "./src/functions/catalog";
+
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
@@ -10,7 +13,7 @@ declare global {
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
-  Overview: undefined;
+  Overview: { manga: Manga };
   Reader: undefined;
   Updates: undefined;
   Settings: undefined;
@@ -23,7 +26,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 
 export type RootTabParamList = {
   Home: undefined;
-  Catalog: undefined;
+  Catalog: { sort: SortOrder } | undefined;
   Favourites: undefined;
   Recents: undefined;
   Downloads: undefined;

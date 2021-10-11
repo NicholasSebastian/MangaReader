@@ -2,7 +2,7 @@ import React, { FC, useState, useRef, useEffect, memo, NamedExoticComponent } fr
 import { 
   StyleSheet, Image, FlatList, Text, View, Pressable, 
   NativeScrollEvent, NativeSyntheticEvent, Animated } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { useTheme, useNavigation } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 
 import { Manga } from '../functions/manga';
@@ -67,11 +67,12 @@ const Carousel: FC<ICarouselProps> = ({ data }) => {
 
 const CarouselCard: NamedExoticComponent<ICardProps> = memo(({ manga }) => {
   const { colors } = useTheme();
+  const navigation = useNavigation();
   const author = manga.author && removeLineBreaks(manga.author);
   const description = manga.summary && formatDescription(manga.summary);
 
   return (
-    <Pressable onPress={() => console.log(`Navigating to Overview with '${manga.title}'`)}>
+    <Pressable onPress={() => navigation.navigate("Overview", { manga })}>
       <View style={styles.card}>
         <Image source={{ uri: manga.imageSrc }} style={StyleSheet.absoluteFill} />
         <BlurView style={styles.content} intensity={85} tint="dark">

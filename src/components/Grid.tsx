@@ -94,5 +94,5 @@ interface IGridProps {
   // Specifically for 'rows' = undefined; a.k.a. FlatList.
   onEndReached?: ((info: { distanceFromEnd: number }) => void) | null | undefined
   listRef?: LegacyRef<FlatList<Manga>>
-  loading: boolean
+  loading?: boolean
 }
