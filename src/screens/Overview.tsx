@@ -36,14 +36,20 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
             {manga.title}
           </Text>
           <Text style={[styles.subtext, { color: colors.text }]} numberOfLines={1}>
-            {removeLineBreaks(manga.author!)}
+            {manga.author ? removeLineBreaks(manga.author) : "Unknown Author"}
           </Text>
           <ButtonGroup manga={manga} />
           <Text style={[styles.subtext, { color: colors.text }]} numberOfLines={6}>
-            {formatDescription(manga.summary!)}
+            {manga.summary ? formatDescription(manga.summary) : "No Summary"}
           </Text>
           <View style={[styles.extra, { backgroundColor: colors.card }]}>
             <Text style={[styles.subtitle, { color: colors.text}]}>
+              Full Title
+            </Text>
+            <Text style={[styles.subtext, { color: colors.text }]}>
+              {manga.title ?? "None"}
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.text, marginTop: 20 }]}>
               Alternative Title{"(s)"}
             </Text>
             <Text style={[styles.subtext, { color: colors.text }]}>
@@ -135,7 +141,7 @@ const styles = StyleSheet.create({
   content: {
     width: "90%",
     alignSelf: "center",
-    paddingBottom: 100
+    paddingBottom: 110
   },
   title: {
     fontSize: 26,
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
     fontFamily: "poppins"
   },
   extra: {
-    marginTop: 20,
+    marginTop: 30,
     padding: 20,
     borderRadius: 10
   },

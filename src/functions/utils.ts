@@ -26,12 +26,12 @@ export function hexToRgb(hex: string) {
 
 export function formatDescription(text: string) {
   try {
-    // Remove the first two lines.
+    // Remove the first two lines or if the line is too short.
     const lines = text.split('\n');
     lines.splice(0, 2);
-    const newText = lines.join('\n');
+    const newText = lines.filter(line => line.length > 25).join('\n');
 
-    // TODO: Take only the first paragraph.
+    // TODO: Remove the unecessary pretexts such as "From blabla:"
 
     return newText;
   }
