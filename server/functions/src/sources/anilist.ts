@@ -28,7 +28,6 @@ export async function getListing(limit: number, callback: Callback) {
     }
   }
   catch(e) { console.warn(e) }
-  finally { console.log("\nActivity completed.") }
 }
 
 function format(data: any) {
@@ -38,12 +37,12 @@ function format(data: any) {
   data.author = firstStaff ? firstStaff.node.name.full : undefined;
 
   data.relations = data.relations?.edges
-    .map((m: any) => m.node)
-    .filter((m: any) => m?.type === "MANGA");
+    .filter((m: any) => m.node.type === "MANGA")
+    .map((m: any) => m.node.id);
 
   data.recommendations = data.recommendations?.edges
-    .map((m: any) => m.node.mediaRecommendation)
-    .filter((m: any) => m?.type === "MANGA");
+    .filter((m: any) => m.node.mediaRecommendation.type === "MANGA")
+    .map((m: any) => m.node.mediaRecommendation.id);
 
   return data;
 }
@@ -109,7 +108,6 @@ const query = `
               id
               type
             }
-            relationType
           }
         }
         recommendations (perPage: 8) {

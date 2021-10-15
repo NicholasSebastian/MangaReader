@@ -14,29 +14,26 @@ db.settings({ ignoreUndefinedProperties: true });
 
 export const scheduledRefresh = functions
   .region("asia-southeast2")
-  .pubsub.schedule("0 1 * * *") // Runs at 1:00AM every day.
+  .pubsub.schedule("every day 03:00")
   .timeZone("Asia/Jakarta")
   .onRun(async context => {
     let batch: FirebaseFirestore.WriteBatch;
-    matchAniListToManganato(
+    await matchAniListToManganato(
       () => { batch = db.batch(); },
       (manga) => {
-        console.log(`Setting object with ID: ${manga.id}`);
-        const mangaRef = db.collection("manga").doc(manga.id.toString());
+        const id = manga.id.toString();
+        const mangaRef = db.collection("manga").doc(id);
         delete manga.id;
         batch.set(mangaRef, manga);
       },
-      async () => {
-        await batch.commit();
-        console.log("Database has been updated.");
-      }
+      async () => { await batch.commit(); }
     );
-    return null;
+    functions.logger.log("Database update finished.");
   });
 
-function matchAniListToManganato (onStart: () => void, onData: (data: any) => void, onEnd: () => Promise<void>) {
+async function matchAniListToManganato (onStart: () => void, onData: (data: any) => void, onEnd: () => Promise<void>) {
   // Fetch manga from anilist's API.
-  getListing(WRITE_LIMIT, async collection => {
+  await getListing(WRITE_LIMIT, async collection => {
     onStart();
     for (const item of collection) {
       // Get the manga's chapters from manganato.
@@ -44,10 +41,10 @@ function matchAniListToManganato (onStart: () => void, onData: (data: any) => vo
         if (!title) continue;
         const slug = toSlug(title as string);
         if (!slug || slug.length < 1) continue;
-        const chapters = await fetchChapters(slug);
-        if (chapters) {
+        const chapterData = await fetchChapters(slug);
+        if (chapterData) {
           // Concatenate the chapters onto the manga data.
-          const manga = Object.assign(item, { chapters });
+          const manga = Object.assign(item, chapterData);
           onData(manga);
           break;
         }

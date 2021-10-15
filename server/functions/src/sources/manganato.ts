@@ -7,8 +7,6 @@ export async function fetchChapters(slug: string) {
   // Build the URL to access the right content.
   const url = `${BASE_URL}/search/story/${slug}`;
 
-  console.log(`\nSearching: ${url}`);
-
   try {
     // Fetch and load the content.
     const { data } = await axios.get(url, { responseType: "text" });
@@ -19,15 +17,11 @@ export async function fetchChapters(slug: string) {
     const mangaUrl = item.attr("href");
     if (!mangaUrl) return;
 
-    console.log(`Processing: '${mangaUrl}'`);
-
     // Get the manga's list of chapters.
-    const chapters = await getChapters(mangaUrl);
-    if (!chapters) return;
+    const chapterData = await getChapters(mangaUrl);
+    if (!chapterData) return;
 
-    console.log(`${chapters.length} chapters found.`);
-
-    return chapters;
+    return chapterData;
   }
   catch(e) {
     console.warn(`Failed to process '${url}'`);
@@ -42,6 +36,10 @@ async function getChapters(url: string) {
     const $ = cheerio.load(response.data as string);
     const list = $("li", ".row-content-chapter");
 
+    // Get the date of the latest update chapter update.
+    const dateString = list.first().find(".chapter-time").text();
+    const lastUpdated = parseDateString(dateString);
+
     // Get the name and link of every chapter in the content.
     const chapters = [];
     for (const chapter of list) {
@@ -53,10 +51,24 @@ async function getChapters(url: string) {
       }
     }
 
-    return chapters;
+    return { chapters, lastUpdated };
   }
   catch (e) {
     console.warn(`Failed to process '${url}'`);
     return undefined;
   }
 }
+
+function parseDateString(text: string) {
+  const [ monthString, dayString, yearString ] = text.split(/\s|,/g);
+  return {
+    year: parseInt(yearString) + 2000,
+    month: months.indexOf(monthString) + 1,
+    day: parseInt(dayString)
+  };
+}
+
+const months = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
