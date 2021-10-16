@@ -12,9 +12,9 @@ const app = admin.initializeApp();
 const db = app.firestore();
 db.settings({ ignoreUndefinedProperties: true });
 
-export const scheduledRefresh = functions
+export const updateDatabase = functions
   .region("asia-southeast2")
-  .pubsub.schedule("every day 03:00")
+  .pubsub.schedule("every day 00:00")
   .timeZone("Asia/Jakarta")
   .onRun(async context => {
     let batch: FirebaseFirestore.WriteBatch;
@@ -27,13 +27,15 @@ export const scheduledRefresh = functions
         batch.set(mangaRef, manga);
       },
       async () => { await batch.commit(); }
-    );
-    functions.logger.log("Database update finished.");
+    )
+    .then(status => {
+      functions.logger.log(`Database update finished. Status: '${status}'`);
+    });
   });
 
 async function matchAniListToManganato (onStart: () => void, onData: (data: any) => void, onEnd: () => Promise<void>) {
   // Fetch manga from anilist's API.
-  await getListing(WRITE_LIMIT, async collection => {
+  return await getListing(WRITE_LIMIT, async collection => {
     onStart();
     for (const item of collection) {
       // Get the manga's chapters from manganato.
