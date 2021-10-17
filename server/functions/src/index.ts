@@ -4,56 +4,68 @@ import * as admin from "firebase-admin";
 import { getListing } from "./sources/anilist";
 import { fetchChapters } from "./sources/manganato";
 
-// Firestore daily free write quota is 20000.
-const WRITE_LIMIT = 19000;
+const WRITE_LIMIT = 9500;   // Firestore daily free write quota is 20000.
+const TIMEOUT = 540;        // Cloud Functions maximum timeout is 9 mins.
 
 // No need for serviceAccount credentials since its already set in firebase functions environment.
 const app = admin.initializeApp(); 
 const db = app.firestore();
 db.settings({ ignoreUndefinedProperties: true });
 
-export const updateDatabase = functions
+export const refreshCollection = functions
+  .runWith({ timeoutSeconds: TIMEOUT })
   .region("asia-southeast2")
   .pubsub.schedule("every day 00:00")
   .timeZone("Asia/Jakarta")
   .onRun(async context => {
-    let batch: FirebaseFirestore.WriteBatch;
-    await matchAniListToManganato(
-      () => { batch = db.batch(); },
-      (manga) => {
+    let count = 0;
+    await getListing(WRITE_LIMIT, async collection => {
+      const batch = db.batch(); 
+      count++;
+      for (const manga of collection) {
         const id = manga.id.toString();
         const mangaRef = db.collection("manga").doc(id);
         delete manga.id;
         batch.set(mangaRef, manga);
-      },
-      async () => { await batch.commit(); }
-    )
+      }
+      await batch.commit();
+      functions.logger.log(`Batch ${count} commited.`);
+    })
     .then(status => {
-      functions.logger.log(`Database update finished. Status: '${status}'`);
+      functions.logger.log(`Database update completed by condition: '${status}'`);
     });
   });
 
-async function matchAniListToManganato (onStart: () => void, onData: (data: any) => void, onEnd: () => Promise<void>) {
-  // Fetch manga from anilist's API.
-  return await getListing(WRITE_LIMIT, async collection => {
-    onStart();
-    for (const item of collection) {
-      // Get the manga's chapters from manganato.
-      for (const title of [...Object.values(item.title)]) {
-        if (!title) continue;
-        const slug = toSlug(title as string);
-        if (!slug || slug.length < 1) continue;
-        const chapterData = await fetchChapters(slug);
-        if (chapterData) {
-          // Concatenate the chapters onto the manga data.
-          const manga = Object.assign(item, chapterData);
-          onData(manga);
-          break;
-        }
-      }
+export const refreshChapters = functions
+  .runWith({ timeoutSeconds: TIMEOUT })
+  .region("asia-southeast2")
+  .firestore.document("manga/{id}")
+  .onCreate(async (snapshot, context) => {
+    const manga = snapshot.data();
+
+    const titles: Array<string> = Object.values(manga.title);
+    const chapterData = await getChapters(titles);
+    if (chapterData) {
+      return snapshot.ref.set(chapterData, { merge: true });
     }
-    await onEnd();
+    else {
+      functions.logger.log(`'${manga.title.english}' will be deleted as no chapters can be found.`);
+      return snapshot.ref.delete();
+    }
   });
+
+async function getChapters(titles: Array<string>) {
+  for (const title of titles) {
+    if (!title) continue;
+    const slug = toSlug(title as string);
+    if (!slug || slug.length < 1) continue;
+
+    const chapterData = await fetchChapters(slug);
+    if (chapterData) {
+      return chapterData;
+    }
+  }
+  return null;
 }
 
 function toSlug (title: string) {

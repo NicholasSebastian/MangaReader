@@ -98,6 +98,7 @@ const query = `
         coverImage {
           large
         }
+        bannerImage
         genres
         synonyms
         averageScore
