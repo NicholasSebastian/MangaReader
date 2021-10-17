@@ -4,10 +4,9 @@ export const DefaultTheme: Theme = {
   dark: false,
   colors: {
     ..._DefaultTheme.colors,
-    primary: "#2f95dc",
-    background: "#fff",
-    card: "#eee",
-    text: "#000"
+    primary: "#4C8CEE",
+    background: "#FFFFFF",
+    text: "#181818"
   }
 };
 
@@ -15,9 +14,8 @@ export const DarkTheme: Theme = {
   dark: true,
   colors: {
     ..._DarkTheme.colors,
-    primary: "#2f95dc",
-    background: "#17181c",
-    card: "#20202a",
-    text: "#fff"
+    primary: "#4C8CEE",
+    background: "#181818",
+    text: "#FFFFFF"
   }
 };

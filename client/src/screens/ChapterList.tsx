@@ -21,7 +21,7 @@ const ChapterList: FC<RootStackScreenProps<'ChapterList'>> = (props) => {
         <TouchableHighlight style={styles.element} underlayColor={colors.card}
           onPress={() => openReader(item.chapterUrl)}>
           <Text style={[styles.text, { color: colors.text }]} numberOfLines={1}>
-            {item.name}
+            {/* here */}
           </Text>
         </TouchableHighlight>
       )} />

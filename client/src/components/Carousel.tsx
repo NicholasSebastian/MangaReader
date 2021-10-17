@@ -6,8 +6,9 @@ import { useTheme, useNavigation } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 
 import { Manga } from '../../types';
-import { removeLineBreaks, formatDescription } from "../utils/utils";
 import { width } from "../constants/Dimensions";
+import { fetchImage } from "../utils/manganato-image";
+import { toBase64 } from '../utils/utils';
 
 const CARD_PADDING = 18;
 const AUTO_SCROLL_INTERVAL = 8000; // in milliseconds
@@ -69,13 +70,18 @@ const CarouselCard: NamedExoticComponent<ICardProps> = memo(({ manga }) => {
   const { colors } = useTheme();
   const mode = useColorScheme();
   const navigation = useNavigation();
-  const author = manga.author && removeLineBreaks(manga.author);
-  const description = manga.summary && formatDescription(manga.summary);
+
+  const [mangaImage, setMangaImage] = useState<string | null>(null);
+  useEffect(() => {
+    fetchImage(manga.coverImage)
+    .then(toBase64)
+    .then(base64 => setMangaImage(base64));
+  }, []);
 
   return (
     <Pressable onPress={() => navigation.navigate("Overview", { manga })}>
       <View style={styles.card}>
-        <Image source={{ uri: manga.imageSrc }} style={StyleSheet.absoluteFill} />
+        <Image source={{ uri: mangaImage ?? undefined }} style={StyleSheet.absoluteFill} />
         <BlurView style={styles.content} intensity={85} tint={mode!}>
           <View style={{ width: '62%' }}>
             <Text numberOfLines={1} 
@@ -84,17 +90,17 @@ const CarouselCard: NamedExoticComponent<ICardProps> = memo(({ manga }) => {
             </Text>
             <Text numberOfLines={1}
               style={[styles.text, { color: colors.text, fontSize: 12, marginTop: 2 }]}>
-              {author}
+              {manga.author}
             </Text>
             <Text style={[styles.bold, { color: colors.text, fontSize: 13, marginTop: 20 }]}>
               Synopsis
             </Text>
             <Text numberOfLines={3} 
               style={[styles.text, { color: colors.text, fontSize: 12 }]}>
-              {description}
+              {manga.description}
             </Text>
           </View>
-          <Image source={{ uri: manga.imageSrc }} 
+          <Image source={{ uri: mangaImage ?? undefined }} 
             style={[styles.image, { borderColor: colors.text }]} />
         </BlurView>
       </View>

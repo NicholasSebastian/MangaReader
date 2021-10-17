@@ -1,6 +1,5 @@
-import React, { memo, NamedExoticComponent, LegacyRef, useState, useEffect } from "react";
-import { StyleSheet, FlatList, View, StyleProp, ViewStyle, Animated, Easing } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import React, { memo, NamedExoticComponent, LegacyRef } from "react";
+import { StyleSheet, FlatList, View, StyleProp, ViewStyle, ActivityIndicator } from "react-native";
 
 import { Manga } from "../../types";
 import { width } from "../constants/Dimensions";
@@ -8,7 +7,6 @@ import Card, { SubtextMode } from "./Card";
 
 const CARD_SIZE_ESTIMATE = 120;
 const CARD_GAP = 8;
-const SPIN_SPEED = 1500; // Higher means slower.
 
 const numberOfColumns = Math.round(width / CARD_SIZE_ESTIMATE);
 const cardWidth = ((width * 0.9) / numberOfColumns) - CARD_GAP;
@@ -41,27 +39,10 @@ const Grid: NamedExoticComponent<IGridProps> = memo((props) => {
         columnWrapperStyle={{ justifyContent: "space-between" }}
         renderItem={({ item, index }) => renderer(item, index, mode)}
         onEndReachedThreshold={0.5} onEndReached={onEndReached}
-        ListFooterComponent={loading ? Loading : null}
+        ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
         ListFooterComponentStyle={styles.loading} />
     );
   }
-});
-
-const Loading: NamedExoticComponent = memo(() => {
-  const [rotationValue] = useState(new Animated.Value(0));
-  const rotation = rotationValue.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
-
-  useEffect(() => {
-    const config = { duration: SPIN_SPEED, easing: Easing.linear, useNativeDriver: true };
-    const timing = Animated.timing(rotationValue, { toValue: 1, ...config });
-    Animated.loop(timing).start()
-  }, []);
-
-  return (
-    <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-      <FontAwesome name="spinner" color="#808080" size={25} />
-    </Animated.View>
-  );
 });
 
 export default Grid;

@@ -22,5 +22,8 @@ export async function fetchImage(url: string) {
     const response = await axios.get(url, { headers, responseType: "blob" });
     return response.data as Blob;
   }
-  catch (e) { throw e; }
+  catch (e) {
+    console.warn(e);
+    return undefined;
+  }
 }

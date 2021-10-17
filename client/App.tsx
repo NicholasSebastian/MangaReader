@@ -3,55 +3,34 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import NetInfo, { NetInfoChangeHandler, NetInfoSubscription } from "@react-native-community/netinfo";
 import * as Font from 'expo-font';
 
-import Navigation from './src/navigation';
-import fonts from './src/constants/Fonts';
 import Collection, { withCollection } from "./src/context/Collection";
 import Online from './src/context/Online';
-
-import { fetchContent, parseCarousel, parseContent } from "";
+import fonts from './src/constants/Fonts';
+import { getTrending, getPopular, getFavourites, getTopRated, getLatest, getNewest } from "./src/utils/firestore";
 import { filterObject } from "./src/utils/utils";
-import { getCollection } from './src/screens/Catalog';
 
+import Navigation from './src/navigation';
 import SplashScreen from './src/components/SplashScreen';
 
+// TODO: Change this into a Class Component.
+
 const App: FC = () => {
-  const { setTrending, setMostViewed, setLatest, setNewest } = useContext(Collection);
+  const { setTrending, setMostViewed, setMostFavourites, setTopRated, setLatest, setNewest } = useContext(Collection);
   const [networkListener, setNetworkListener] = useState<NetInfoSubscription | null>(null);
-  const [connectionFailed, setConnectionFailed] = useState(false);
+  const [connectionSuccess, setConnectionSuccess] = useState(true);
 
   const loadResources = async () => { 
     const { isConnected } = await NetInfo.fetch();
-
     const load1 = loadFonts();
-    if (!isConnected) {
-      await load1;
-      const subscription = NetInfo.addEventListener(onOffline);
-      setNetworkListener(subscription);
-    }
-    else {
+    
+    if (isConnected) {
       const load2 = loadCollection();
       await Promise.all([load1, load2]);
     }
-  }
-
-  // NOTE: This function takes roughly 17s on average to execute.
-  const loadCollection = async () => {
-    try {
-      const content = await fetchContent(1, "topview")
-      const trendingUrls = parseCarousel(content);
-      const mostViewedUrls = parseContent(content);
-      
-      const load1 = getCollection(trendingUrls).then(setTrending);
-      const load2 = getCollection(mostViewedUrls).then(setMostViewed);
-
-      const load3 = fetchContent(1, "latest").then(parseContent).then(getCollection).then(setLatest);
-      const load4 = fetchContent(1, "newest").then(parseContent).then(getCollection).then(setNewest);
-
-      await Promise.all([load1, load2, load3, load4]);
-    }
-    catch(e) { 
-      // TODO: Network errors are still not being caught here...
-      setConnectionFailed(true);
+    else {
+      await load1;
+      const subscription = NetInfo.addEventListener(onOffline);
+      setNetworkListener(subscription);
     }
   }
 
@@ -64,10 +43,27 @@ const App: FC = () => {
     }
   } 
 
+  const loadCollection = async () => {
+    try {
+      const load1 = getTrending().then(setTrending);
+      const load2 = getPopular().then(setMostViewed);
+      const load3 = getFavourites().then(setMostFavourites);
+      const load4 = getTopRated().then(setTopRated);
+      const load5 = getLatest().then(setLatest);
+      const load6 = getNewest().then(setNewest);
+
+      await Promise.allSettled([load1, load2, load3, load4, load5, load6]);
+    }
+    catch(e) { 
+      setConnectionSuccess(false);
+    }
+  }
+
+  const isOnline = (networkListener === null);
   return (
     <SplashScreen loadAsync={loadResources}>
       <SafeAreaProvider>
-        <Online.Provider value={networkListener === null && !connectionFailed}>
+        <Online.Provider value={isOnline && connectionSuccess}>
           <Navigation />
         </Online.Provider>
       </SafeAreaProvider>

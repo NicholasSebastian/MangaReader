@@ -1,5 +1,5 @@
 type FilterPredicate = (value: [string, any], index: number, array: [string, any][]) => boolean;
-type Base64Result = string | ArrayBuffer | null;
+type Base64Result = string | null;
 
 export function filterObject(obj: object, predicate: FilterPredicate) {
   return Object.fromEntries(Object.entries(obj).filter(predicate));
@@ -15,10 +15,11 @@ export function hexToRgb(hex: string) {
   }
 }
 
-export function toBase64(blob: Blob) {
+export function toBase64(blob: Blob | undefined) {
+  if (!blob) return null;
   return new Promise<Base64Result>((resolve, _) => {
     const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
+    reader.onloadend = () => resolve(reader.result as Base64Result);
     reader.readAsDataURL(blob);
   });
 }

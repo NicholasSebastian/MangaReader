@@ -30,12 +30,14 @@ const Home: FC<RootTabScreenProps<'Home'>> = (props) => {
         <Heading title="Now Trending" description="See what everyone's been reading" />
         <Carousel data={trending} />
       </View>
-      {/* TODO: Continue Reading */}
+      {/* TODO: Recommended for you - 'Since you've read 'bla bla'' */}
       <View style={styles.section}>
         <Heading title="Most Popular Manga" description="Guaranteed to be interesting"
-          onMore={() => navigation.navigate("Catalog", { sort: "topview" })} />
+          onMore={() => navigation.navigate("Catalog", { sort: "popularity" })} />
         <Grid data={mostViewed} mode="genre" rows={2} />
       </View>
+      {/* TODO: Author Spotlight */}
+      {/* TODO: Continue Reading */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <Heading title="Updated Manga" description="Don't miss this week's update"
           onMore={() => navigation.navigate("Catalog", { sort: "latest" })} />

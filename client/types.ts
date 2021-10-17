@@ -35,19 +35,44 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   NativeStackScreenProps<RootStackParamList>
 >;
 
-export type SortOrder = "latest" | "topview" | "newest";
+export type SortOrder = "popularity" | "favourites" | "score" | "latest" | "newest";
 
 export interface Manga {
-  title?: string
-  imageSrc?: string
-  alternative?: string
-  author?: string
-  status?: boolean
-  genres?: Array<string>
-  lastUpdate?: Date
-  views?: number
-  summary?: string
-  chapters?: Array<Chapter>
+  id: number
+  title: {
+    english: string
+    romaji: string
+    native: string
+  }
+  description: string
+  status: string
+  startDate: Date
+  endDate: Date
+  coverImage: string
+  genres: Array<string>
+  synonyms: Array<string>
+  averageScore: number
+  popularity: number
+  trending: number
+  favourites: number
+  lastUpdated: Date
+  isAdult: boolean
+  author: string
+  externalLinks: Array<Link>
+  relations: Array<number>
+  recommendations: Array<number>
+  chapters: Array<Chapter>
+}
+
+interface Date {
+  year: number
+  month: number
+  day: number
+}
+
+interface Link {
+  url: string
+  site: string
 }
 
 interface Chapter {

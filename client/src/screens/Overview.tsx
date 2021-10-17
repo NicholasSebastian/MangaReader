@@ -8,7 +8,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from "expo-web-browser";
 
 import { RootStackScreenProps, Manga } from '../../types';
-import { formatDescription, removeLineBreaks } from '../utils/utils';
 
 const BUTTON_SIZE = 27;
 
