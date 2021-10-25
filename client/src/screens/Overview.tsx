@@ -17,6 +17,7 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
   const { colors } = useTheme();
   const mode = useColorScheme();
 
+  // TODO: divide up into smaller components to make it easier to read.
   return (
     <View style={{ flex: 1 }}>
       <Pressable style={styles.back} onPress={navigation.goBack}>
@@ -25,34 +26,34 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
       </Pressable>
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.background}>
-          <Image source={{ uri: manga.imageSrc }} style={StyleSheet.absoluteFill} />
+          <Image source={{ uri: manga.coverImage }} style={StyleSheet.absoluteFill} />
           <BlurView intensity={60} tint={mode!} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["transparent", colors.background]} style={StyleSheet.absoluteFill} />
         </View>
-        <Image source={{ uri: manga.imageSrc }} style={styles.image} />
+        <Image source={{ uri: manga.coverImage }} style={styles.image} />
         <View style={styles.content}>
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
-            {manga.title}
+            {manga.title.english}
           </Text>
           <Text style={[styles.subtext, { color: colors.text }]} numberOfLines={1}>
-            {manga.author ? removeLineBreaks(manga.author) : "Unknown Author"}
+            {manga.author ? manga.author : "Unknown Author"}
           </Text>
           <ButtonGroup manga={manga} />
           <Text style={[styles.subtext, { color: colors.text }]} numberOfLines={6}>
-            {manga.summary ? formatDescription(manga.summary) : "No Summary"}
+            {manga.description ? manga.description : "No Summary"}
           </Text>
           <View style={[styles.extra, { backgroundColor: colors.card }]}>
             <Text style={[styles.subtitle, { color: colors.text}]}>
               Full Title
             </Text>
             <Text style={[styles.subtext, { color: colors.text }]}>
-              {manga.title ?? "None"}
+              {manga.title.english ?? "None"}
             </Text>
             <Text style={[styles.subtitle, { color: colors.text, marginTop: 20 }]}>
               Alternative Title{"(s)"}
             </Text>
             <Text style={[styles.subtext, { color: colors.text }]}>
-              {manga.alternative ?? "None"}
+              {manga.synonyms ?? "None"}
             </Text>
             <Text style={[styles.subtitle, { color: colors.text, marginTop: 20 }]}>
               Genres
@@ -60,9 +61,7 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
             <View style={styles.genreContainer}>
               {manga.genres?.map((genre, index) => (
                 <View key={index} style={styles.genre}>
-                  <Text style={[styles.subtext, { color: colors.text }]}>
-                    {removeLineBreaks(genre)}
-                  </Text>
+                  <Text style={[styles.subtext, { color: colors.text }]}>{genre}</Text>
                 </View>
               )) ?? "Uncategorized"}
             </View>
@@ -92,7 +91,7 @@ const ButtonGroup: FC<{ manga: Manga }> = (props) => {
   const { manga } = props;
 
   const openWebpage = () => {
-    const query = manga.title?.replaceAll(/\s/g, '+');
+    const query = manga.title.english?.replaceAll(/\s/g, '+');
     const url = `https://www.google.com/search?q=${query}+manga`;
     WebBrowser.openBrowserAsync(url);
   }

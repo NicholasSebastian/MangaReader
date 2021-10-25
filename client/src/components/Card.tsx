@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, StyleProp, ViewStyle }
 import { useTheme, useNavigation } from "@react-navigation/native";
 import { Manga } from "../../types";
 
+// TODO: change design.
+
 const Card: NamedExoticComponent<ICardProps> = memo((props) => {
   const { manga, style, mode, showChapter } = props;
   const { colors } = useTheme();
@@ -11,10 +13,10 @@ const Card: NamedExoticComponent<ICardProps> = memo((props) => {
   return (
     <TouchableOpacity onPress={() => navigation.navigate("Overview", { manga })} activeOpacity={0.8}>
       <View style={style}>
-        <Image source={{ uri: manga.imageSrc }} style={styles.image} />
+        <Image source={{ uri: manga.coverImage }} style={styles.image} />
         <View>
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
-            {manga.title}
+            {manga.title.english}
           </Text>
           {showChapter && manga.chapters && manga.chapters[0] && (
             <Text style={styles.subtext} numberOfLines={1}>{manga.chapters[0].name}</Text>

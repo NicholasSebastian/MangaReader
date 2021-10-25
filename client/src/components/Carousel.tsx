@@ -1,18 +1,17 @@
 import React, { FC, useState, useRef, useEffect, memo, NamedExoticComponent } from 'react';
-import { 
-  StyleSheet, Image, FlatList, Text, View, Pressable, 
+import { StyleSheet, Image, FlatList, Text, View, Pressable, 
   NativeScrollEvent, NativeSyntheticEvent, Animated, useColorScheme } from 'react-native';
 import { useTheme, useNavigation } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 
 import { Manga } from '../../types';
 import { width } from "../constants/Dimensions";
-import { fetchImage } from "../utils/manganato-image";
-import { toBase64 } from '../utils/utils';
 
 const CARD_PADDING = 18;
 const AUTO_SCROLL_INTERVAL = 8000; // in milliseconds
 const PAGINATION_FADE_SPEED = 60;
+
+// TODO: change design.
 
 const Carousel: FC<ICarouselProps> = ({ data }) => {
   const [paginationVisibility] = useState(new Animated.Value(1));
@@ -71,22 +70,15 @@ const CarouselCard: NamedExoticComponent<ICardProps> = memo(({ manga }) => {
   const mode = useColorScheme();
   const navigation = useNavigation();
 
-  const [mangaImage, setMangaImage] = useState<string | null>(null);
-  useEffect(() => {
-    fetchImage(manga.coverImage)
-    .then(toBase64)
-    .then(base64 => setMangaImage(base64));
-  }, []);
-
   return (
     <Pressable onPress={() => navigation.navigate("Overview", { manga })}>
       <View style={styles.card}>
-        <Image source={{ uri: mangaImage ?? undefined }} style={StyleSheet.absoluteFill} />
+        <Image source={{ uri: manga.coverImage }} style={StyleSheet.absoluteFill} />
         <BlurView style={styles.content} intensity={85} tint={mode!}>
           <View style={{ width: '62%' }}>
             <Text numberOfLines={1} 
               style={[styles.bold, { color: colors.text, fontSize: 16 }]}>
-              {manga.title}
+              {manga.title.english}
             </Text>
             <Text numberOfLines={1}
               style={[styles.text, { color: colors.text, fontSize: 12, marginTop: 2 }]}>
@@ -100,7 +92,7 @@ const CarouselCard: NamedExoticComponent<ICardProps> = memo(({ manga }) => {
               {manga.description}
             </Text>
           </View>
-          <Image source={{ uri: mangaImage ?? undefined }} 
+          <Image source={{ uri: manga.coverImage }} 
             style={[styles.image, { borderColor: colors.text }]} />
         </BlurView>
       </View>

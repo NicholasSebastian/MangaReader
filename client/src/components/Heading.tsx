@@ -4,6 +4,8 @@ import { useTheme } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { width } from "../constants/Dimensions";
 
+// TODO: change design.
+
 const Heading: FC<IHeadingProps> = (props) => {
   const { title, description, onMore } = props;
   const { colors } = useTheme();

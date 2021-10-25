@@ -6,8 +6,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { RootTabScreenProps } from '../../types';
 import { ScreenType } from '../navigation';
 import { width } from '../constants/Dimensions';
-import Collection from "../context/Collection";
-import Online from '../context/Online';
+import Context from "../components/Context";
 
 import Heading from '../components/Heading';
 import Carousel from "../components/Carousel";
@@ -16,37 +15,38 @@ import HorizontalList from '../components/HorizontalList';
 import Message from '../components/Message';
 
 const Home: FC<RootTabScreenProps<'Home'>> = (props) => {
-  const { trending, mostViewed, latest, newest } = useContext(Collection);
-  const isConnected = useContext(Online);
+  const { collection, online } = useContext(Context);
   const { colors } = useTheme();
   const { navigation } = props;
+  const { Popularity, Favourites, Score, Latest, Newest } = collection.All;
 
-  if (!isConnected) {
+  if (!online) {
     return <Message text="You are currently offline." />;
   }
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.section}>
         <Heading title="Now Trending" description="See what everyone's been reading" />
-        <Carousel data={trending} />
+        <Carousel data={Favourites} />
       </View>
       {/* TODO: Recommended for you - 'Since you've read 'bla bla'' */}
+      {/* TODO: Continue Reading */}
+      {/* TODO: Author Spotlight */}
       <View style={styles.section}>
         <Heading title="Most Popular Manga" description="Guaranteed to be interesting"
-          onMore={() => navigation.navigate("Catalog", { sort: "popularity" })} />
-        <Grid data={mostViewed} mode="genre" rows={2} />
+          onMore={() => navigation.navigate("Catalog", { sort: "Popularity" })} />
+        <Grid data={Popularity} mode="genre" rows={2} />
       </View>
-      {/* TODO: Author Spotlight */}
-      {/* TODO: Continue Reading */}
+      {/* TODO: Top Rated */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <Heading title="Updated Manga" description="Don't miss this week's update"
-          onMore={() => navigation.navigate("Catalog", { sort: "latest" })} />
-        <HorizontalList data={latest} mode="genre" showChapters />
+          onMore={() => navigation.navigate("Catalog", { sort: "Latest" })} />
+        <HorizontalList data={Latest} mode="genre" showChapters />
       </View>
       <View style={styles.section}>
         <Heading title="New Releases!" description="Read our latest recommendations"
-          onMore={() => navigation.navigate("Catalog", { sort: "newest" })} />
-        <HorizontalList data={newest} mode="genre" />
+          onMore={() => navigation.navigate("Catalog", { sort: "Newest" })} />
+        <HorizontalList data={Newest} mode="genre" />
       </View>
     </ScrollView>
   );

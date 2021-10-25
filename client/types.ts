@@ -1,6 +1,6 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 declare global {
   namespace ReactNavigation {
@@ -11,7 +11,7 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Overview: { manga: Manga };
-  ChapterList: { chapters: Array<any> };
+  ChapterList: { chapters: Array<Chapter> };
   Reader: { chapterUrl: string };
   Updates: undefined;
   Settings: undefined;
@@ -35,10 +35,16 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   NativeStackScreenProps<RootStackParamList>
 >;
 
-export type SortOrder = "popularity" | "favourites" | "score" | "latest" | "newest";
+export type SortOrder = "Trending" | "Popularity" | "Favourites" | "Score" | "Latest" | "Newest";
+
+export type Genre = (
+  "All" | "Action" | "Adventure" | "Comedy" | "Drama" | "Ecchi" | "Fantasy" | 
+  "Horror" | "Mahou Shoujo" | "Mecha" | "Music" | "Mystery" | "Psychological" | "Romance" | 
+  "Sci-Fi" | "Slice of Life" | "Sports" | "Supernatural" | "Thriller"
+);
 
 export interface Manga {
-  id: number
+  id: string
   title: {
     english: string
     romaji: string

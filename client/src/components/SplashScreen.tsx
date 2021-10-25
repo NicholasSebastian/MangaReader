@@ -9,8 +9,8 @@ import { DefaultTheme, DarkTheme } from "../constants/Colors";
 const splashImage = require("../assets/images/logo.png");
 const { backgroundColor: defaultBackgroundColor, resizeMode } = Constants.manifest!.splash!;
 
-// TODO: Replace the use of a logo with just normal text; Import and load 'Arial Black'.
-// TODO: Animate the logo letters, so users won't think the app hangs during long load times.
+// TODO: remove most of the uneccessary animations.
+// Just keep the fade out animation and add a background fade change on light mode.
 
 const FADE_DURATION = 300;
 

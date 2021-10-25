@@ -1,79 +1,79 @@
-import React, { FC, useContext, useState } from 'react';
+import React, { Component, ContextType } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import NetInfo, { NetInfoChangeHandler, NetInfoSubscription } from "@react-native-community/netinfo";
+import NetInfo from "@react-native-community/netinfo";
 import * as Font from 'expo-font';
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
-import Collection, { withCollection } from "./src/context/Collection";
-import Online from './src/context/Online';
+import Context, { withContext } from "./src/components/Context";
 import fonts from './src/constants/Fonts';
-import { getTrending, getPopular, getFavourites, getTopRated, getLatest, getNewest } from "./src/utils/firestore";
+import query from "./src/utils/firestore-manga";
 import { filterObject } from "./src/utils/utils";
 
 import Navigation from './src/navigation';
 import SplashScreen from './src/components/SplashScreen';
 
-// TODO: Change this into a Class Component.
+class App extends Component {
+  declare context: ContextType<typeof Context>;
+  static contextType = Context;
 
-const App: FC = () => {
-  const { setTrending, setMostViewed, setMostFavourites, setTopRated, setLatest, setNewest } = useContext(Collection);
-  const [networkListener, setNetworkListener] = useState<NetInfoSubscription | null>(null);
-  const [connectionSuccess, setConnectionSuccess] = useState(true);
+  constructor(props: {}) {
+    super(props);
+    this.loadResources = this.loadResources.bind(this);
+    this.loadCollection = this.loadCollection.bind(this);
+    this.loadFonts = this.loadFonts.bind(this);
+  }
 
-  const loadResources = async () => { 
+  private async loadResources() { 
     const { isConnected } = await NetInfo.fetch();
-    const load1 = loadFonts();
+    const load1 = this.loadFonts();
     
     if (isConnected) {
-      const load2 = loadCollection();
+      const load2 = this.loadCollection();
       await Promise.all([load1, load2]);
     }
     else {
       await load1;
-      const subscription = NetInfo.addEventListener(onOffline);
-      setNetworkListener(subscription);
+      const unsubscribe = NetInfo.addEventListener(
+        networkState => {
+        if (networkState.isConnected) {
+          this.loadCollection();
+          unsubscribe();
+        }
+      });
     }
   }
 
-  const onOffline: NetInfoChangeHandler = ({ isConnected }) => {
-    const unsubscribe = networkListener; // renamed.
-    if (isConnected) {
-      loadCollection();
-      unsubscribe!();
-      setNetworkListener(null);
-    }
-  } 
+  private async loadCollection() {
+    const { setCollection, setOnline } = this.context;
+    const addToCollection = (data: object) => setCollection(prev => ({ ...prev, All: { ...prev.All, ...data } }));
 
-  const loadCollection = async () => {
-    try {
-      const load1 = getTrending().then(setTrending);
-      const load2 = getPopular().then(setMostViewed);
-      const load3 = getFavourites().then(setMostFavourites);
-      const load4 = getTopRated().then(setTopRated);
-      const load5 = getLatest().then(setLatest);
-      const load6 = getNewest().then(setNewest);
+    const load1 = query('Trending').then(Trending => addToCollection({ Trending }));
+    const load2 = query('Popularity').then(Popularity => addToCollection({ Popularity }));
+    const load3 = query('Favourites').then(Favourites => addToCollection({ Favourites }));
+    const load4 = query('Score').then(Score => addToCollection({ Score }));
+    const load5 = query('Latest').then(Latest => addToCollection({ Latest }));
+    const load6 = query('Newest').then(Newest => addToCollection({ Newest }));
 
-      await Promise.allSettled([load1, load2, load3, load4, load5, load6]);
-    }
-    catch(e) { 
-      setConnectionSuccess(false);
-    }
+    await Promise.all([load1, load2, load3, load4, load5, load6]);
+    setOnline(true);
   }
 
-  const isOnline = (networkListener === null);
-  return (
-    <SplashScreen loadAsync={loadResources}>
-      <SafeAreaProvider>
-        <Online.Provider value={isOnline && connectionSuccess}>
-          <Navigation />
-        </Online.Provider>
-      </SafeAreaProvider>
-    </SplashScreen>
-  );
+  private async loadFonts() {
+    const unloadedFonts = filterObject(fonts, font => !Font.isLoaded(font[0]));
+    await Font.loadAsync(unloadedFonts);
+  }
+
+  render() {
+    return (
+      <SplashScreen loadAsync={this.loadResources}>
+        <SafeAreaProvider>
+          <ActionSheetProvider>
+            <Navigation />
+          </ActionSheetProvider>
+        </SafeAreaProvider>
+      </SplashScreen>
+    );
+  }
 }
 
-async function loadFonts() {
-  const newFonts = filterObject(fonts, font => !Font.isLoaded(font[0]));
-  await Font.loadAsync(newFonts);
-}
-
-export default withCollection(App);
+export default withContext(App);
