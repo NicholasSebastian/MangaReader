@@ -20,6 +20,8 @@ const Home: FC<RootTabScreenProps<'Home'>> = (props) => {
   const { navigation } = props;
   const { Popularity, Favourites, Score, Latest, Newest } = collection.All;
 
+  const goToCatalog = () => navigation.navigate("Catalog");
+
   if (!online) {
     return <Message text="You are currently offline." />;
   }
@@ -29,23 +31,19 @@ const Home: FC<RootTabScreenProps<'Home'>> = (props) => {
         <Heading title="Now Trending" description="See what everyone's been reading" />
         <Carousel data={Favourites} />
       </View>
-      {/* TODO: Recommended for you - 'Since you've read 'bla bla'' */}
       {/* TODO: Continue Reading */}
-      {/* TODO: Author Spotlight */}
+      {/* TODO: Recommended for you - 'Since you've read 'bla bla'' */}
       <View style={styles.section}>
-        <Heading title="Most Popular Manga" description="Guaranteed to be interesting"
-          onMore={() => navigation.navigate("Catalog", { sort: "Popularity" })} />
+        <Heading title="Most Popular Manga" description="Guaranteed to be interesting" onMore={goToCatalog} />
         <Grid data={Popularity} mode="genre" rows={2} />
       </View>
       {/* TODO: Top Rated */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
-        <Heading title="Updated Manga" description="Don't miss this week's update"
-          onMore={() => navigation.navigate("Catalog", { sort: "Latest" })} />
+        <Heading title="Updated Manga" description="Don't miss this week's update" onMore={goToCatalog} />
         <HorizontalList data={Latest} mode="genre" showChapters />
       </View>
       <View style={styles.section}>
-        <Heading title="New Releases!" description="Read our latest recommendations"
-          onMore={() => navigation.navigate("Catalog", { sort: "Newest" })} />
+        <Heading title="New Releases!" description="Read our latest recommendations" onMore={goToCatalog} />
         <HorizontalList data={Newest} mode="genre" />
       </View>
     </ScrollView>

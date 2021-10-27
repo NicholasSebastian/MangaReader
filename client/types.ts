@@ -11,7 +11,7 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Overview: { manga: Manga };
-  ChapterList: { chapters: Array<Chapter> };
+  ChapterList: { name: string, chapters: Array<Chapter> };
   Reader: { chapterUrl: string };
   Updates: undefined;
   Settings: undefined;
@@ -24,7 +24,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 
 export type RootTabParamList = {
   Home: undefined;
-  Catalog: { sort: SortOrder } | undefined;
+  Catalog: undefined;
   Favourites: undefined;
   Recents: undefined;
   Downloads: undefined;

@@ -9,10 +9,10 @@ import { DefaultTheme, DarkTheme } from "../constants/Colors";
 const splashImage = require("../assets/images/logo.png");
 const { backgroundColor: defaultBackgroundColor, resizeMode } = Constants.manifest!.splash!;
 
-// TODO: remove most of the uneccessary animations.
-// Just keep the fade out animation and add a background fade change on light mode.
-
 const FADE_DURATION = 300;
+
+const darkColor = hexToRgb(defaultBackgroundColor!);
+const lightColor = DefaultTheme.colors.card; // Already in RGB format apparently.
 
 const SplashScreen: FC<ISplashScreenProps> = (props) => {
   const { children, loadAsync } = props;
@@ -24,6 +24,8 @@ const SplashScreen: FC<ISplashScreenProps> = (props) => {
   const [bodyOpacity] = useState(new Animated.Value(1));
   const [logoOpacity] = useState(new Animated.Value(0));
   const [backgroundColor] = useState(new Animated.Value(0));
+
+  const lightTransition = backgroundColor.interpolate({ inputRange: [0, 1], outputRange: [darkColor!, lightColor!] });
 
   const loadResources = () => {
     loadAsync()
@@ -37,41 +39,26 @@ const SplashScreen: FC<ISplashScreenProps> = (props) => {
   const startSplashScreen = () => {
     _SplashScreen.hideAsync();
     Animated.parallel([
-      Animated.timing(logoOpacity, { 
-        toValue: 1, duration: FADE_DURATION, useNativeDriver: true 
-      }),
-      Animated.timing(backgroundColor, { 
-        toValue: 1, duration: FADE_DURATION, useNativeDriver: false 
-      })
+      Animated.timing(logoOpacity, { toValue: 1, duration: FADE_DURATION, useNativeDriver: true }),
+      Animated.timing(backgroundColor, { toValue: 1, duration: FADE_DURATION, useNativeDriver: false })
     ])
     .start();
   }
 
   const hideSplashScreen = () => {
-    Animated.timing(bodyOpacity, { 
-      toValue: 0, duration: FADE_DURATION, useNativeDriver: true 
-    })
+    Animated.timing(bodyOpacity, { toValue: 0, duration: FADE_DURATION, useNativeDriver: true })
     .start(() => setAnimationComplete(true));
   }
-  
-  const darkColor = hexToRgb(defaultBackgroundColor!);
-  const lightColor = DefaultTheme.colors.card; // Already in RGB format apparently.
 
-  const lightTransition = backgroundColor.interpolate({ 
-    inputRange: [0, 1], 
-    outputRange: [darkColor!, lightColor!]
-  });
-
+  const bgColor = mode === "dark" ? darkColor : lightTransition;
+  const logoColor = mode === "dark" ? DarkTheme.colors.text : DefaultTheme.colors.text;
   return (
     <View style={{ flex: 1 }} onLayout={startSplashScreen}>
       {isAppReady && children}
       {!isAnimationComplete && (
-        <Animated.View style={[StyleSheet.absoluteFill, styles.body, 
-          { backgroundColor: mode === "dark" ? darkColor : lightTransition }]}>
+        <Animated.View style={[StyleSheet.absoluteFill, styles.body, { backgroundColor: bgColor }]}>
           <Animated.Image source={splashImage} onLoadEnd={loadResources} 
-            style={[styles.splash, { opacity: logoOpacity, 
-              tintColor: mode === "dark" ? DarkTheme.colors.text : DefaultTheme.colors.text 
-            }]} />
+            style={[styles.splash, { opacity: logoOpacity, tintColor: logoColor }]} />
         </Animated.View>
       )}
     </View>

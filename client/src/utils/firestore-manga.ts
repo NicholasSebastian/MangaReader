@@ -10,52 +10,10 @@ import { toBase64 } from "./utils";
 const PAGINATION = 18;
 const collectionRef = db.collection("manga");
 
-// TODO: fix startAfter not working. its always returning the same from the beginning.
-// TODO: create indexes in firebase firestore console for the other 'sort order's.
-
 async function query(order: SortOrder, genre?: Genre, startAfter?: string) {
-  // Define the query to be filtered to only manga that includes the given genre.
-  const hasGenre = genre && genre !== "All";
-  let query = hasGenre ? collectionRef.where("genres", "array-contains", genre) : collectionRef;
-
-  // Define the query 'orderBy' by the desired sort order.
-  switch (order) {
-    case "Trending":
-      query = query
-      .orderBy("trending", "desc")
-      .orderBy("popularity", "desc");
-      break;
-    case "Popularity":
-      query = query.orderBy("popularity", "desc");
-      break;
-    case "Favourites":
-      query = query.orderBy("favourites", "desc");
-      break;
-    case "Score":
-      query = query.orderBy("averageScore", "desc");
-      break;
-    case "Latest":
-      query = query
-      .orderBy("lastUpdated.year", "desc")
-      .orderBy("lastUpdated.month", "desc")
-      .orderBy("lastUpdated.day", "desc")
-      .orderBy("popularity", "desc");
-      break;
-    case "Newest":
-      query = query
-      .orderBy("startDate.year", "desc")
-      .orderBy("startDate.month", "desc")
-      .orderBy("startDate.day", "desc")
-      .orderBy("popularity", "desc");
-      break;
-    default:
-      query = collectionRef; 
-      break;
-  }
-  
-  // Define the query to begin after the given document ID.
-  const cursor = startAfter !== undefined ? collectionRef.doc(startAfter) : undefined;
-  const paginatedQuery = cursor ? query.startAfter(cursor) : query;
+  const query = getQueryByGenre(collectionRef, genre);
+  const sortedQuery = sortQuery(query, order);
+  const paginatedQuery = await paginateQuery(sortedQuery, startAfter);
 
   // Limit the number of results to receive and get the data.
   const snapshot = await paginatedQuery.limit(PAGINATION).get();
@@ -74,6 +32,52 @@ async function query(order: SortOrder, genre?: Genre, startAfter?: string) {
   return success.map(result => (result as PromiseResolution<Manga>).value);
 }
 
+function getQueryByGenre(collection: Collection, genre: Genre | undefined) {
+  if (genre && genre !== "All") {
+    return collection.where("genres", "array-contains", genre);
+  }
+  return collectionRef;
+}
+
+function sortQuery(query: Query, order: SortOrder) {
+  switch (order) {
+    case "Trending":
+      return query
+      .orderBy("trending", "desc")
+      .orderBy("popularity", "desc");
+    case "Popularity":
+      return query
+      .orderBy("popularity", "desc");
+    case "Favourites":
+      return query
+      .orderBy("favourites", "desc");
+    case "Score":
+      return query
+      .orderBy("averageScore", "desc");
+    case "Latest":
+      return query
+      .orderBy("lastUpdated.year", "desc")
+      .orderBy("lastUpdated.month", "desc")
+      .orderBy("lastUpdated.day", "desc")
+      .orderBy("popularity", "desc");
+    case "Newest":
+      return query
+      .orderBy("startDate.year", "desc")
+      .orderBy("startDate.month", "desc")
+      .orderBy("startDate.day", "desc")
+      .orderBy("popularity", "desc");
+  }
+}
+
+async function paginateQuery(query: Query, startAfter: string | undefined) {
+  if (startAfter && startAfter.length > 0) {
+    const cursor = await collectionRef.doc(startAfter).get();
+    return query.startAfter(cursor);
+  }
+  return query;
+}
+
 export default query;
 
 type Query = firebase.firestore.Query<firebase.firestore.DocumentData>;
+type Collection = firebase.firestore.CollectionReference<firebase.firestore.DocumentData>;

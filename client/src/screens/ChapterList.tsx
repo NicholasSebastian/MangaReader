@@ -7,14 +7,16 @@ import { width } from "../constants/Dimensions";
 const ChapterList: FC<RootStackScreenProps<'ChapterList'>> = (props) => {
   const { route, navigation } = props;
   const { colors } = useTheme();
+  const { chapters } = route.params;
 
   const openReader = (chapterUrl: string) => {
     navigation.goBack();
     setTimeout(() => navigation.navigate("Reader", { chapterUrl }), 0);
   }
 
+  console.log(chapters);
   return (
-    <FlatList data={route.params.chapters}
+    <FlatList data={chapters}
       keyExtractor={(item, index) => index.toString()}
       contentContainerStyle={styles.container}
       renderItem={({ item, index }) => (

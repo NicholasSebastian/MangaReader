@@ -16,6 +16,7 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
   const { manga } = route.params;
   const { colors } = useTheme();
   const mode = useColorScheme();
+  const { english, romaji, native } = manga.title;
 
   // TODO: divide up into smaller components to make it easier to read.
   return (
@@ -33,21 +34,21 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
         <Image source={{ uri: manga.coverImage }} style={styles.image} />
         <View style={styles.content}>
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
-            {manga.title.english}
+            {english ?? romaji ?? native}
           </Text>
           <Text style={[styles.subtext, { color: colors.text }]} numberOfLines={1}>
             {manga.author ? manga.author : "Unknown Author"}
           </Text>
           <ButtonGroup manga={manga} />
           <Text style={[styles.subtext, { color: colors.text }]} numberOfLines={6}>
-            {manga.description ? manga.description : "No Summary"}
+            {manga.description ? manga.description.replace(/<br>/g, '\n') : "No Summary"}
           </Text>
           <View style={[styles.extra, { backgroundColor: colors.card }]}>
             <Text style={[styles.subtitle, { color: colors.text}]}>
               Full Title
             </Text>
             <Text style={[styles.subtext, { color: colors.text }]}>
-              {manga.title.english ?? "None"}
+              {english ?? romaji ?? native ?? "None"}
             </Text>
             <Text style={[styles.subtitle, { color: colors.text, marginTop: 20 }]}>
               Alternative Title{"(s)"}
@@ -78,7 +79,7 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
       <View style={styles.mainButtonContainer}>
         <LinearGradient colors={["transparent", colors.background]} style={styles.mainButtonBackdrop} />
         <TouchableOpacity style={[styles.mainButton, { backgroundColor: colors.primary }]} activeOpacity={0.9}
-          onPress={() => navigation.navigate("ChapterList", { chapters: manga.chapters! })}>
+          onPress={() => navigation.navigate("ChapterList", { name: manga.title.english, chapters: manga.chapters! })}>
           <Text style={styles.mainButtonText}>Read Now</Text>
         </TouchableOpacity>
       </View>
@@ -89,12 +90,7 @@ const Overview: FC<RootStackScreenProps<'Overview'>> = (props) => {
 const ButtonGroup: FC<{ manga: Manga }> = (props) => {
   const { colors } = useTheme();
   const { manga } = props;
-
-  const openWebpage = () => {
-    const query = manga.title.english?.replaceAll(/\s/g, '+');
-    const url = `https://www.google.com/search?q=${query}+manga`;
-    WebBrowser.openBrowserAsync(url);
-  }
+  const { site, url } = manga.externalLinks[0];
 
   return (
     <View style={styles.buttonGroup}>
@@ -110,9 +106,9 @@ const ButtonGroup: FC<{ manga: Manga }> = (props) => {
         <FontAwesome name="arrow-circle-down" size={BUTTON_SIZE} color={colors.text} />
         <Text style={[styles.buttonText, { color: colors.text }]}>Download</Text>
       </Pressable>
-      <Pressable onPress={openWebpage} style={styles.button}>
+      <Pressable onPress={() => WebBrowser.openBrowserAsync(url)} style={styles.button}>
         <FontAwesome name="search-plus" size={BUTTON_SIZE} color={colors.text} />
-        <Text style={[styles.buttonText, { color: colors.text }]}>Lookup</Text>
+        <Text style={[styles.buttonText, { color: colors.text }]}>{site}</Text>
       </Pressable>
     </View>
   );

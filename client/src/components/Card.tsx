@@ -9,6 +9,7 @@ const Card: NamedExoticComponent<ICardProps> = memo((props) => {
   const { manga, style, mode, showChapter } = props;
   const { colors } = useTheme();
   const navigation = useNavigation();
+  const { english, romaji, native } = manga.title;
 
   return (
     <TouchableOpacity onPress={() => navigation.navigate("Overview", { manga })} activeOpacity={0.8}>
@@ -16,7 +17,7 @@ const Card: NamedExoticComponent<ICardProps> = memo((props) => {
         <Image source={{ uri: manga.coverImage }} style={styles.image} />
         <View>
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
-            {manga.title.english}
+            {english ?? romaji ?? native}
           </Text>
           {showChapter && manga.chapters && manga.chapters[0] && (
             <Text style={styles.subtext} numberOfLines={1}>{manga.chapters[0].name}</Text>

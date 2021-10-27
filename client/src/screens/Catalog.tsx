@@ -14,17 +14,24 @@ import Context from "../components/Context";
 import Grid from "../components/Grid";
 import Message, { Loading } from "../components/Message";
 
-const TAB_WIDTH = 110;
+const TAB_WIDTH = 80;
 const sortOptions: Array<SortOrder> = ["Trending", "Popularity", "Latest", "Favourites", "Score", "Newest"];
 
 const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
 const navigatorOptions: MaterialTopTabNavigationOptions = {
+  lazy: true,
+  lazyPlaceholder: () => <Loading />,
   tabBarScrollEnabled: true,
-  tabBarItemStyle: { width: TAB_WIDTH }
+  tabBarItemStyle: { width: "auto", minWidth: TAB_WIDTH },
+  tabBarLabelStyle: { 
+    fontSize: 12,
+    fontFamily: "poppins",
+    textTransform: "capitalize" 
+  }
 };
 
-const Catalog: FC<RootTabScreenProps<'Catalog'>> = () => {
+const Catalog: FC<RootTabScreenProps<'Catalog'>> = (props) => {
   const Page = connectActionSheet(withTheme(CatalogPage));
   return (
     <TopTab.Navigator initialRouteName="All" screenOptions={navigatorOptions}>
@@ -86,7 +93,7 @@ class CatalogPage extends Component<PageProps, IPageState> {
     this.setState({ isLoading: true });
 
     const current = collection[name][sort];
-    const startAfter = current ? current[current.length - 1].id : undefined;
+    const startAfter = current && current.length > 0 ? current[current.length - 1].id : undefined;
     const data = await query(sort, name, startAfter);
     
     const newCollection = [...current, ...data];
@@ -108,14 +115,17 @@ class CatalogPage extends Component<PageProps, IPageState> {
     }
     
     const data = collection[route.name][sort];
-    if (!data) {
+    if (!data || data.length === 0) {
       this.loadMore();
       return <Loading />;
     }
     return (
       <View style={styles.container}>
         <Pressable onPress={this.sortButtonHandler} style={styles.sort}>
-          <Text style={[styles.text, { color: theme.colors.text }]}>Sort by: {sort}</Text>
+          <Text style={[styles.text, { color: theme.colors.text }]}>
+            Sort by: {sort}{"  "}
+            <FontAwesome name="filter" size={10} />
+          </Text>
         </Pressable>
         <Grid data={data} mode="author" listRef={this.listRef}
           style={styles.grid} onEndReached={this.loadMore} loading={isLoading} />

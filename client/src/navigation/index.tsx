@@ -33,7 +33,8 @@ const RootNavigator: FC = () => {
         <Stack.Screen name="Reader" component={Reader} />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="ChapterList" component={ChapterList} options={{ headerTitle: "Chapter List" }} />
+        <Stack.Screen name="ChapterList" component={ChapterList} 
+          options={({ route }) => ({ headerTitle: route.params.name })} />
         <Stack.Screen name="Updates" component={Updates} />
         <Stack.Screen name="Settings" component={Settings} />
       </Stack.Group>

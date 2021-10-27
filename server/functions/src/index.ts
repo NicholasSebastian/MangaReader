@@ -4,8 +4,9 @@ import * as admin from "firebase-admin";
 import { getListing } from "./sources/anilist";
 import { fetchChapters } from "./sources/manganato";
 
-const WRITE_LIMIT = 9500;   // Firestore daily free write quota is 20000.
+const WRITE_LIMIT = 9000;   // Firestore daily free write quota is 20000.
 const TIMEOUT = 540;        // Cloud Functions maximum timeout is 9 mins.
+const WAIT_TIME = 23 * 60 * 60 * 1000;  // 23 hours.
 
 // No need for serviceAccount credentials since its already set in firebase functions environment.
 const app = admin.initializeApp(); 
@@ -15,16 +16,18 @@ db.settings({ ignoreUndefinedProperties: true });
 export const refreshCollection = functions
   .runWith({ timeoutSeconds: TIMEOUT })
   .region("asia-southeast2")
-  .pubsub.schedule("every day 00:00")
+  .pubsub.schedule("every day 01:00")
   .timeZone("Asia/Jakarta")
   .onRun(async context => {
     let count = 0;
+    const nullTime = admin.firestore.Timestamp.fromMillis(0);
     await getListing(WRITE_LIMIT, async collection => {
       const batch = db.batch(); 
       count++;
       for (const manga of collection) {
         const id = manga.id.toString();
         const mangaRef = db.collection("manga").doc(id);
+        manga.serverTimestamp = nullTime;
         delete manga.id;
         batch.set(mangaRef, manga);
       }
@@ -40,17 +43,34 @@ export const refreshChapters = functions
   .runWith({ timeoutSeconds: TIMEOUT })
   .region("asia-southeast2")
   .firestore.document("manga/{id}")
-  .onCreate(async (snapshot, context) => {
-    const manga = snapshot.data();
+  .onWrite(async (change, context) => {
+    const { after } = change;
 
+    // Do nothing on delete.
+    if (!after.exists) return;
+
+    const manga = after.data()!;
+    const now = admin.firestore.Timestamp.now();
+
+    // Do nothing if already updated today.
+    const lastRefresh = manga.serverTimestamp.toMillis();
+    if ((now.toMillis() - lastRefresh) < WAIT_TIME) return;
+
+    // Check for new chapters then update the document.
     const titles: Array<string> = Object.values(manga.title);
     const chapterData = await getChapters(titles);
     if (chapterData) {
-      return snapshot.ref.set(chapterData, { merge: true });
+      const { chapters, lastUpdated } = chapterData;
+      return after.ref.update({ 
+        chapters, 
+        lastUpdated, 
+        serverTimestamp: now
+      });
     }
     else {
-      functions.logger.log(`'${manga.title.english}' will be deleted as no chapters can be found.`);
-      return snapshot.ref.delete();
+      const { english, romaji, native } = manga.title;
+      functions.logger.log(`'${english ?? romaji ?? native}' will be deleted as no chapters can be found.`);
+      return after.ref.delete();
     }
   });
 
